@@ -244,26 +244,26 @@ export function WalletModal({
         role={embedded ? "region" : "dialog"}
         aria-modal={embedded ? undefined : true}
         aria-labelledby="wallet-title"
-        className="w-full max-w-md rounded-[8px] border border-[var(--line)] bg-[var(--card)] p-5"
+        className="c2-account"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex items-center gap-2">
+        <div className="c2-account-lab">
           <KeyRound size={18} aria-hidden="true" />
           <Pill tone="wired">{kind === "demo-server" ? "Demo server" : kind === "near-connect" ? "Wallet" : "This device"}</Pill>
         </div>
-        <h2 id="wallet-title" className="mt-3 text-xl font-semibold">
+        <h2 id="wallet-title">
           {setupOnly ? "Patient account" : TITLE[method]}
         </h2>
         {setupOnly && kind === "demo-server" ? null : (
-          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+          <p className="text-sm leading-6 text-[var(--muted)]">
             {setupOnly
               ? "Try instantly keeps a demo key on this device. Use my wallet signs with a testnet wallet. The server does not keep that key."
               : signCopy(method, kind)}
           </p>
         )}
-        <p className="mt-3 text-sm leading-6">
+        <p className="text-sm leading-6">
           {status?.label || "Choose Try instantly or Use my wallet."}
-          {status?.accountId ? <span className="mt-1 block break-all font-mono text-xs">{status.accountId}</span> : null}
+          {status?.accountId ? <span className="c2-account-id">{status.accountId}</span> : null}
         </p>
         {warning ? <p className="mt-2 text-sm">{warning}</p> : null}
         <div aria-live="polite" className="mt-2 text-sm">
@@ -290,7 +290,7 @@ export function WalletModal({
             .
           </p>
         )}
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="c2-account-actions">
           {status?.faucetConfigured && kind !== "local-key" && kind !== "near-connect" ? (
             <Button testId="try-instantly" disabled={phase === "pending"} onClick={tryInstantly}>
               Try instantly
