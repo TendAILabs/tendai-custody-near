@@ -6,7 +6,7 @@ The author of the fixes does not close a High or Critical finding. The verdicts 
 
 | Item | Value |
 | --- | --- |
-| Repo | TendAILabs/TendAI-NEAR, private |
+| Repo | Development repo of this project |
 | Fix commit | `212c461a` (`212c461add86e0b53c1627e33aef2550b32d2d31`), branch `cursor/redteam-fixes-3f0c` |
 | Diff base | `12fecbbf` (`12fecbbf2aec5814426b59988fcbf7054fdfeff7`), `main` |
 | When | 2026-11-11, about 10:43 to 11:00 Bangkok (UTC+7) |

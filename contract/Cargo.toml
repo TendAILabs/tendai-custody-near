@@ -7,7 +7,7 @@ resolver = "3"
 rust-version = "1.99"
 # NEP-0330 is implemented for contracts built with cargo-near.
 # contract_source_metadata returns this repository link.
-repository = "https://github.com/TendAILabs/TendAI-NEAR"
+repository = "https://github.com/TendAILabs/tendai-custody-near"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

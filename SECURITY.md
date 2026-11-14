@@ -209,6 +209,6 @@ Do not commit key files, `.env`, or credential directories. `.gitignore` lists `
 
 Open a private GitHub security advisory on this repository:
 
-https://github.com/TendAILabs/TendAI-NEAR/security/advisories/new
+https://github.com/TendAILabs/tendai-custody-near/security/advisories/new
 
 Include what you ran, the commit, and the effect. Do not include secrets or tokens. There is no email address for reports in this repository.

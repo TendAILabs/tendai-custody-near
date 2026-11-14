@@ -239,7 +239,7 @@ The contract checks that a receipt hash is 64 hex characters. It does not check 
 
 Built for [NEAR HACKATHON](https://nearhackathon.com). Primary track: privacy (private AI, TEE, NEAR AI Cloud). Secondary track: security (function-call keys, and a `provider_tee` receipt check before approve).
 
-The GitHub repository was created 2026-11-09. This tree has no pre-hackathon baseline.
+This project was built during the hackathon window, from the 2026-10-19 announcement to 2026-11-14. Development happened in a separate repository, whose first commit is dated 2026-11-09. This public repository was published on 2026-11-15 as a clean release of that work. There is no pre-hackathon baseline.
 
 The product calls NEAR AI Cloud. AI tools used: Cursor, Claude, GPT, Codex, OpenRouter, Gemini, and Grok. Libraries are the stack table above.
 
