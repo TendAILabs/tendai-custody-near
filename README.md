@@ -1,5 +1,11 @@
 # TendAI Custody
 
+Patient-approved record transfers from a clinic to a hospital, logged on NEAR testnet.
+
+[![TendAI Custody home page: Patients share, approve, and revoke their own records. Click to watch the demo video.](docs/media/hero.webp)](https://github.com/TendAILabs/tendai-custody-near/releases/download/v1.0-demo/tendai-custody-demo.mp4)
+
+Demo video (1:15, mp4): [watch on the v1.0-demo release](https://github.com/TendAILabs/tendai-custody-near/releases/download/v1.0-demo/tendai-custody-demo.mp4). Live demo: https://tendaicustody.app
+
 ## Judges start here
 
 TendAI Custody is a patient-approved referral from a clinic to a hospital, with a chain-of-custody record on NEAR testnet and a NEAR AI Cloud TEE summary.
@@ -22,7 +28,7 @@ TendAI Custody is a patient-approved referral from a clinic to a hospital, with 
   "guided_demo": "https://tendaicustody.app/home?guide=1",
   "proof_url": "https://tendaicustody.app/onchain?desk=proof",
   "explorer": "https://testnet.nearblocks.io/address/rr191f8afd-contract.testnet",
-  "repo": "https://github.com/TendAILabs/TendAI-NEAR",
+  "repo": "https://github.com/TendAILabs/tendai-custody-near",
   "license": "MIT",
   "data": "fictional"
 }
@@ -88,9 +94,15 @@ A production retest of that path on 2026-11-14 is in the claim map below. Each h
 
 A clinic sends a referral. The patient approves a narrower share. The hospital opens that share while it is active. Each of those steps is a call on the NEAR contract `rr191f8afd-contract.testnet`. The contract stores account ids, organization display names, section hashes, scope, expiry, status, and open counters. It does not store chart text.
 
+![Clinic page after Send referral: status reads Sent, waiting for Maya, with the Proof on NEAR testnet link.](docs/media/clinic-send.webp)
+
 The clinic browser encrypts each section to the patient and clinic public keys stored on the contract. On approval, the patient browser seals a new envelope to the hospital public key from the contract. NEAR AI Cloud writes the summary inside a TEE. A separate de-identification pass strips a fictional copy for the PulseFit app. The TEE does not hold the hospital wrap key.
 
+![Patient page: a sealed summary with provider_tee receipt fields and the Approve and share button.](docs/media/patient-approve.webp)
+
 The patient can revoke the share. The next open is refused. A copy that was already downloaded stays where it was saved.
+
+![Hospital page after revoke: Access revoked, and the contract check refused the open with nothing new written.](docs/media/access-refused.webp)
 
 ## Real and simulated
 
@@ -113,6 +125,8 @@ Live means a testnet account, a testnet transaction, or a call this demo makes t
 | `TESTNET_CONTRACT` in `web/lib/fixtures.ts` | Older account id still in that fixture | The constant is `rr6c9910d7.testnet`. The running server reads `RELAY_CONTRACT_ID`. This README names the schema 2 account. |
 
 ## Claim map
+
+![Proof page activity log with create_record, request_referral, approve_share, request_open and revoke_share rows.](docs/media/proof-log.webp)
 
 Production retest, 2026-11-14, contract `rr191f8afd-contract.testnet`. RPC `tx` with `wait_until` `NONE` returned success for each row. `create_record` returned record id `9`. `request_referral` returned share id `17`. `approve_share` and `revoke_share` attached a deposit of 1 yoctoNEAR. After the revoke, `get_share` for share 17 returned `status` `Revoked` and `open_count` 1.
 
