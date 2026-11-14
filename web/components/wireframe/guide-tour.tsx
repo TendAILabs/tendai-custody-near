@@ -10,6 +10,9 @@ import { setGuided } from "./intro-modal";
 
 type Box = { top: number; left: number; width: number; height: number };
 
+/** Fixed footer height plus a little air, so a card never sits on the footer links. */
+const FOOTER = 48;
+
 function place(target: Box, width: number, height: number): { top: number; left: number } {
   const margin = 12;
   const gap = 12;
@@ -35,7 +38,7 @@ function place(target: Box, width: number, height: number): { top: number; left:
     left = margin;
   }
   return {
-    top: Math.min(Math.max(margin, top), Math.max(margin, vh - height - margin)),
+    top: Math.min(Math.max(margin, top), Math.max(margin, vh - height - FOOTER)),
     left: Math.min(Math.max(margin, left), Math.max(margin, vw - width - margin)),
   };
 }
