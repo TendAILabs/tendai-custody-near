@@ -1,5 +1,5 @@
 const NEAR_CONNECT =
-  " https://rpc.testnet.near.org https://rpc.mainnet.near.org https://test.rpc.fastnear.com https://free.rpc.fastnear.com https://near-testnet.drpc.org https://api.fastnear.com https://api.nearblocks.io https://*.near.org https://*.near.ai https://api.near.ai wss://*.near.org https://raw.githubusercontent.com https://cdn.jsdelivr.net";
+  " https://rpc.testnet.near.org https://rpc.mainnet.near.org https://test.rpc.fastnear.com https://free.rpc.fastnear.com https://near-testnet.drpc.org https://api.zan.top https://api.fastnear.com https://api.nearblocks.io https://*.near.org https://*.near.ai https://api.near.ai wss://*.near.org https://raw.githubusercontent.com https://cdn.jsdelivr.net";
 
 export function contentSecurityPolicy(env: string | undefined): string {
   const toolbar = env === "preview" || env === "development";
