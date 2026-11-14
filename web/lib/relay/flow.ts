@@ -59,9 +59,17 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 async function chainPublic(contractId: string, accountId: string): Promise<Uint8Array> {
-  const actor = await rpcView<{ enc_pubkey?: string } | null>(contractId, "get_actor", { account_id: accountId });
-  const hex = actor?.enc_pubkey ?? "";
-  if (!/^[0-9a-f]{64}$/i.test(hex)) throw new Error("on-chain encryption key missing");
+  let hex = "";
+  for (let attempt = 0; attempt < 3 && !/^[0-9a-f]{64}$/i.test(hex); attempt += 1) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 700));
+    try {
+      const actor = await rpcView<{ enc_pubkey?: string } | null>(contractId, "get_actor", { account_id: accountId });
+      hex = actor?.enc_pubkey ?? "";
+    } catch {
+      hex = "";
+    }
+  }
+  if (!/^[0-9a-f]{64}$/i.test(hex)) throw new Error("The testnet node did not return this account's encryption key. Try the step again.");
   const chosen = recipientPublicKey({ chainHex: hex, serverHex: null });
   return hexToBytes(chosen.publicKeyHex);
 }
