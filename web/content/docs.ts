@@ -1,11 +1,7 @@
 /**
  * TendAI Custody documentation copy.
  * Every statement is taken from the contract, the web app, or docs/ in this repo.
- * WHITEPAPER_URL and WHITEPAPER_PDF_URL stay null until a paper exists.
  */
-
-export const WHITEPAPER_URL: string | null = null;
-export const WHITEPAPER_PDF_URL: string | null = null;
 
 export const DOC_TITLE = "Docs | TendAI Custody";
 
@@ -112,7 +108,6 @@ export type DocBlock =
   | { kind: "flow" }
   | { kind: "actors" }
   | { kind: "methods" }
-  | { kind: "whitepaper" }
   | { kind: "faq" };
 
 export type DocSection = {
@@ -839,21 +834,8 @@ export const DOC_SECTIONS: readonly DocSection[] = [
     ],
   },
   {
-    id: "whitepaper",
-    index: "10",
-    kicker: "Whitepaper",
-    title: "Whitepaper",
-    blocks: [
-      {
-        kind: "p",
-        text: "The card below reads WHITEPAPER_URL and WHITEPAPER_PDF_URL in web/content/docs.ts. Both are null, so this page does not link a paper and does not offer a PDF.",
-      },
-      { kind: "whitepaper" },
-    ],
-  },
-  {
     id: "companion",
-    index: "11",
+    index: "10",
     kicker: "Companion",
     title: "Companion entry",
     blocks: [
@@ -865,7 +847,7 @@ export const DOC_SECTIONS: readonly DocSection[] = [
   },
   {
     id: "faq",
-    index: "12",
+    index: "11",
     kicker: "FAQ",
     title: "Questions from a judge, a clinician, or a patient",
     blocks: [{ kind: "faq" }],

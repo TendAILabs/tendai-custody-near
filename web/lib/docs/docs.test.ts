@@ -8,8 +8,6 @@ import {
   CONTRACT_METHODS,
   DOC_SECTIONS,
   FAQ,
-  WHITEPAPER_PDF_URL,
-  WHITEPAPER_URL,
   docsPlainText,
 } from "../../content/docs.ts";
 
@@ -53,15 +51,13 @@ function renderDocs(): string {
   return renderToStaticMarkup(createElement(loaded.DocsView));
 }
 
-test("docs content has at least 12 FAQ answers and a null whitepaper", () => {
+test("docs content has at least 12 FAQ answers", () => {
   assert.ok(FAQ.length >= 12);
   assert.equal(new Set(FAQ.map((item) => item.id)).size, FAQ.length);
   for (const item of FAQ) {
     assert.ok(item.question.endsWith("?"), item.id);
     assert.ok(item.answer.length >= 1, item.id);
   }
-  assert.equal(WHITEPAPER_URL, null);
-  assert.equal(WHITEPAPER_PDF_URL, null);
   assert.ok(CONTRACT_METHODS.length >= 20);
   assert.equal(new Set(DOC_SECTIONS.map((section) => section.id)).size, DOC_SECTIONS.length);
 });
@@ -72,7 +68,7 @@ test("docs copy does not say HIPAA compliant and has no em dash", () => {
   assert.equal(/HIPAA compliant/i.test(text), false);
 });
 
-test("the docs route renders TOC anchors, the FAQ, and the whitepaper placeholder", () => {
+test("the docs route renders TOC anchors and the FAQ", () => {
   const html = renderDocs();
   assert.match(html, /<h1>Documentation<\/h1>/);
   assert.match(html, /id="docs-main"/);
@@ -87,8 +83,7 @@ test("the docs route renders TOC anchors, the FAQ, and the whitepaper placeholde
   for (const item of FAQ) assert.equal(ids.has(item.id), true, item.id);
   assert.equal((html.match(/<details/g) ?? []).length, FAQ.length + 1);
   for (const item of FAQ) assert.match(html, new RegExp(`<summary>[\\s\\S]*${item.question.replace(/[?]/g, "\\?")}`));
-  assert.match(html, /The whitepaper is coming/);
-  assert.equal(html.includes("Download the PDF"), false);
+  assert.equal(/whitepaper/i.test(html), false);
   assert.equal(html.includes("\u2014"), false);
   assert.equal(/HIPAA compliant/i.test(html), false);
   assert.match(html, /Designed around HIPAA principles/);
