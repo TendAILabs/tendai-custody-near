@@ -1,0 +1,10 @@
+[package]
+name = "redteam-contract-mock"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Red-team repros for the TendAI Custody contract. Mock NEAR runtime, not a deployed chain."
+
+[dependencies]
+referral-relay = { path = "../../../../contract" }
+near-sdk = { version = "5.30.1", features = ["unit-testing"] }

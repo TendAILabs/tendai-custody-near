@@ -1,0 +1,15 @@
+{
+  "name": "tendai-custody",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup:testnet": "node --experimental-strip-types scripts/setup-testnet.ts",
+    "pulsefit:fc-key": "node --experimental-strip-types scripts/pulsefit-fc-key.ts",
+    "e2e": "node --experimental-strip-types scripts/e2e-cli.ts",
+    "phi-scan": "node --experimental-strip-types scripts/phi-scan.ts",
+    "attack-demo": "node --experimental-strip-types scripts/attack-demo.ts"
+  },
+  "dependencies": {
+    "near-api-js": "^7.4.0"
+  }
+}

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TendAI Custody · Support</title>
+<meta name="description" content="TendAI Custody mockup. Fictional example data. Designed around HIPAA principles.">
+<link rel="stylesheet" href="shell.css">
+</head>
+<body class="">
+
+<div class="top">
+  <a class="brand" href="01-intro.html"><span class="mk">TC</span>TendAI Custody</a>
+  <div class="status"><span><span class="dot"></span>Near testnet</span><b>rr6c9910d7.testnet</b><span>Fictional data</span><span>Demo key</span></div>
+  <a class="go" href="02-guided.html#consent">Guided demo <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+</div>
+<nav class="rail" aria-label="Workspace">
+<h6>Actors</h6>
+<a class="ri" data-nav="clinic" href="02-guided.html#consent" style="--c:var(--h-clinic)"><span class="n">01</span><i class="sw"></i><span>Clinic A</span><span class="st ok">Sent</span></a>
+<a class="ri" data-nav="consent" href="02-guided.html#consent" style="--c:var(--ink)"><span class="n">02</span><i class="sw"></i><span>Maya</span><span class="st">Pending</span></a>
+<a class="ri" data-nav="hospital" href="02-guided.html#consent" style="--c:var(--h-hosp)"><span class="n">03</span><i class="sw"></i><span>Hospital B</span><span class="st">Waiting</span></a>
+<a class="ri" data-nav="reyes" href="02-guided.html#reyes" style="--c:var(--h-2nd)"><span class="n">04</span><i class="sw"></i><span>Dr. Reyes</span><span class="st">Idle</span></a>
+<a class="ri" data-nav="deid" href="02-guided.html#reyes" style="--c:var(--h-app)"><span class="n">05</span><i class="sw"></i><span>PulseFit</span><span class="st">Idle</span></a>
+<h6>Proof</h6>
+<a class="ri" data-nav="timeline" href="05-log.html" style="--c:var(--sig)"><span class="n">06</span><i class="sw"></i><span>Custody</span><span class="st">On NEAR</span></a>
+<a class="ri" data-nav="verify" href="02-guided.html#consent" style="--c:var(--sig)"><span class="n">07</span><i class="sw"></i><span>Verification</span><span class="st">Ready</span></a>
+<a class="ri" data-nav="revoked" href="02-guided.html#consent" style="--c:var(--red)"><span class="n">08</span><i class="sw"></i><span>Access</span><span class="st">3 holders</span></a>
+<h6>Guides</h6>
+<a class="ri" data-nav="help" href="03-help.html" style="--c:var(--ink)"><span class="n">09</span><i class="sw"></i><span>Help</span><span class="st"></span></a>
+<a class="ri on" data-nav="support" href="04-support.html" style="--c:var(--ink)"><span class="n">10</span><i class="sw"></i><span>Support</span><span class="st"></span></a>
+<div class="case"><b>Riverbend Family Clinic</b>Example story on testnet.<br>Case RR-0142</div>
+</nav>
+<main class="stage">
+
+<section data-screen="form" class="on">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>10</b><i></i>Support</div>
+      <h1>Tell us what you <mark class="mark">need</mark></h1>
+      <p class="lede">This form is part of the demo. Sending it will show a confirmation. Nothing is emailed, and no real ticket is created.</p>
+    </div>
+  </header>
+  <div class="cols" style="margin-top:8px">
+    <div>
+      <div class="sec">
+        <div class="sec-h"><span class="t">A <em>Contact</em></span><span class="r">Fictional demo form</span></div>
+        <div class="sec-b">
+          <form class="form" id="contact" action="#sent">
+            <div class="field">
+              <label for="name">Your name</label>
+              <input id="name" name="name" type="text" autocomplete="off" placeholder="Fictional name">
+            </div>
+            <div class="field">
+              <label for="email">Wallet</label>
+              <input id="email" name="email" type="text" autocomplete="off" placeholder="A NEAR testnet account">
+            </div>
+            <div class="field">
+              <label for="role">I am</label>
+              <select id="role" name="role">
+                <option>A patient</option>
+                <option>Clinic staff</option>
+                <option>Hospital staff</option>
+                <option>A second-opinion doctor</option>
+                <option>Something else</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="msg">Message</label>
+              <textarea id="msg" name="msg" placeholder="How can we help?"></textarea>
+              <span class="hint">Do not include real patient information. This story is fictional.</span>
+            </div>
+            <div class="row">
+              <button class="btn" type="submit">Send message <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></button>
+              <button class="btn ghost" type="submit" name="kind" value="problem" id="problem">Report a problem</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec">
+        <div class="sec-h"><span class="t">B <em>Service status</em></span><span class="r">Checked for this demo</span></div>
+        <div class="sec-b" style="padding-top:2px">
+          <div class="status-list">
+            <div class="srow"><i class="sw"></i><div><b>NEAR testnet</b><p>Practice network. Contract rr6c9910d7.testnet.</p></div><span class="tag q">Reachable</span></div>
+            <div class="srow"><i class="sw"></i><div><b>NEAR AI Cloud</b><p>Sealed summaries, signed provider_tee.</p></div><span class="tag q">Reachable</span></div>
+            <div class="srow"><i class="sw"></i><div><b>This demo</b><p>Hosted preview with protection on.</p></div><span class="tag q">Running</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-h"><span class="t">C <em>Policies</em></span></div>
+        <div class="sec-b" style="padding-top:2px">
+          <div class="links-plain">
+            <a href="#privacy">Privacy notice <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+            <a href="#terms">Terms of use <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+            <a href="03-help.html">Help and FAQ <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section data-screen="sent">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>10</b><i></i>Support · Sent</div>
+      <h1>Message <mark class="mark">recorded</mark></h1>
+      <p class="lede">Thank you. In a live product this would reach the support team.</p>
+    </div>
+  </header>
+  <div class="navy sent" style="margin-top:28px;max-width:720px">
+    <div class="lab">Demo confirmation</div>
+    <h2>Nothing was emailed.</h2>
+    <p>This is a fictional demo, so the form does not create a ticket or send a message. Your words stayed in this browser and were not stored.</p>
+    <div class="row">
+      <a class="btn" href="#form" style="background:#F4F6F8;color:var(--ink);border-color:#F4F6F8">Send another note <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+      <a class="btn ghost" href="03-help.html" style="color:#F4F6F8;border-color:rgba(244,246,248,.4)">Back to Help</a>
+    </div>
+  </div>
+</section>
+
+
+<section data-screen="privacy">
+  <header class="ph">
+    <div class="ph-l" style="grid-column:1 / span 12">
+      <div class="eyebrow"><b>10</b><i></i>Privacy notice</div>
+      <h1>How this demo treats <mark class="mark">information</mark></h1>
+      <p class="lede">Plain language for a first-time visitor. Designed around HIPAA principles, not certified.</p>
+    </div>
+  </header>
+  <div class="prose">
+    <h2>01 · Fictional data only</h2>
+    <p>Maya, the clinic, the hospital, and every chart in this demo are fictional. Do not enter a real patient record, a real name, or a real contact detail that you would not want shown in a public demo.</p>
+    <h2>02 · What is stored on NEAR</h2>
+    <p>The contract stores ids, hashes, and timestamps: who shared what, with whom, and when. It does not store health data, names, or the text of a chart.</p>
+    <h2>03 · Sealed summaries</h2>
+    <p>A short summary is written inside a NEAR AI Cloud TEE, a locked server that even we cannot read. Maya can read that summary before she approves a share.</p>
+    <h2>04 · De-identification is best effort</h2>
+    <p>A stripped copy removes common identifiers and shows a preview first. This may miss something. It is not a promise that the copy cannot be re-identified.</p>
+    <h2>05 · Revoking access</h2>
+    <p>Revoking stops the next open. It cannot erase a copy someone already downloaded or saved.</p>
+    <h2>06 · This support form</h2>
+    <p>The contact form in this demo does not email anyone and does not store your message. In a live product, a real form would say how long a message is kept and who can read it.</p>
+    <p style="margin-top:28px"><a class="btn sm ghost" href="#form">Back to Support <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a></p>
+  </div>
+</section>
+
+
+<section data-screen="terms">
+  <header class="ph">
+    <div class="ph-l" style="grid-column:1 / span 12">
+      <div class="eyebrow"><b>10</b><i></i>Terms of use</div>
+      <h1>A practice demo on <mark class="mark">testnet</mark></h1>
+      <p class="lede">Please read this before you click around. It is short on purpose.</p>
+    </div>
+  </header>
+  <div class="prose">
+    <h2>01 · What this is</h2>
+    <p>TendAI Custody is a hackathon demo that runs on NEAR testnet. It shows how a patient-approved referral and a custody log can work. It is not a live clinic system and not a medical device.</p>
+    <h2>02 · What this is not</h2>
+    <p>The demo is designed around HIPAA principles.</p><p>Do not load a real patient record into this product.</p>
+    <h2>03 · Testnet, not mainnet</h2>
+    <p>Actions you see here are on a practice network. They are not mainnet transactions and not real payments.</p>
+    <h2>04 · No professional advice</h2>
+    <p>The fictional chart, the sealed summary, and the hospital reply are examples only. They are not medical advice.</p>
+    <h2>05 · Your use</h2>
+    <p>You may explore the guided demo, the log, Help, and Support. Do not try to load real health information, and do not treat the form as a live support channel.</p>
+    <p style="margin-top:28px"><a class="btn sm ghost" href="#form">Back to Support <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a></p>
+  </div>
+</section>
+
+</main>
+<div class="foot">
+  <span>Fictional data. Designed around <b>HIPAA principles</b>, not certified. De-identification is best effort, with a preview.</span>
+  <span class="flinks">
+    <a href="03-help.html">Help</a>
+    <a href="04-support.html">Support</a>
+    <a href="04-support.html#privacy">Privacy</a>
+    <a href="04-support.html#terms">Terms</a>
+  </span>
+</div>
+
+
+<script>
+function show(name){
+  const allowed = ['form','sent','privacy','terms'];
+  if (!allowed.includes(name)) name = 'form';
+  document.querySelectorAll('[data-screen]').forEach(s => s.classList.toggle('on', s.dataset.screen === name));
+  if (location.hash.slice(1) !== name) history.replaceState(null,'','#'+name);
+  window.scrollTo(0,0);
+}
+document.getElementById('contact').addEventListener('submit', e => {
+  e.preventDefault();
+  show('sent');
+});
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1) || 'form');
+</script>
+
+</body>
+</html>

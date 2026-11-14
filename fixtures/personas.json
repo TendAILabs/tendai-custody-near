@@ -1,0 +1,107 @@
+{
+  "fictional": true,
+  "dataset": "referral-relay-fixtures",
+  "note": "Invented names, places, and numbers. Phone numbers use 555. This file is not a real medical record.",
+  "organizations": [
+    {
+      "fictional": true,
+      "id": "riverbend",
+      "role": "Clinic",
+      "display_name": "Riverbend Family Clinic",
+      "clinician": "Dr. Lena Park",
+      "specialty": "family medicine"
+    },
+    {
+      "fictional": true,
+      "id": "st-aster",
+      "role": "Clinic",
+      "display_name": "St. Aster General",
+      "clinician": "Dr. Arjun Mehta",
+      "specialty": "cardiology"
+    },
+    {
+      "fictional": true,
+      "id": "northgate",
+      "role": "Clinic",
+      "display_name": "Northgate Heart Institute",
+      "clinician": "Dr. Sofia Reyes",
+      "specialty": "cardiology"
+    },
+    {
+      "fictional": true,
+      "id": "lakeside",
+      "role": "Clinic",
+      "display_name": "Lakeside Family Medicine",
+      "clinician": "Dr. Helen Cho",
+      "specialty": "family medicine"
+    },
+    {
+      "fictional": true,
+      "id": "pulsefit",
+      "role": "App",
+      "display_name": "PulseFit"
+    }
+  ],
+  "personas": [
+    {
+      "fictional": true,
+      "id": "maya-okafor",
+      "role": "demo-lead",
+      "name": "Maya Okafor",
+      "dob": "1968-03-14",
+      "mrn": "RB-004417",
+      "address": "41 Alder Lane, Fictionville",
+      "phone": "555-0142",
+      "email": "maya.okafor@example.test",
+      "insurance_id": "FX-889-2210",
+      "anchor_date": "2026-10-14",
+      "sections": {
+        "history": "Hypertension for 6 years. 3 weeks of chest tightness when climbing stairs, resolves with rest. Father had a myocardial infarction at 61. Ex-smoker. First visit for this episode 2026-10-14.",
+        "meds": "Lisinopril 20 mg daily. Atorvastatin 20 mg daily.",
+        "labs": "Labs drawn 2026-10-28. LDL 168 mg/dL, HDL 41, A1c 5.9%, creatinine 0.9, TSH normal. BP 152/94, HR 78, BMI 29.",
+        "imaging": "Resting ECG with nonspecific ST changes. Chest X-ray normal.",
+        "notes": "Referred for stress testing and cardiology evaluation. Unrelated sensitive note that should not go to cardiology: 2021 counseling visit for anxiety."
+      }
+    },
+    {
+      "fictional": true,
+      "id": "daniel-cho",
+      "role": "transfer-example",
+      "name": "Daniel Cho",
+      "dob": "1992-07-02",
+      "mrn": "RB-008812",
+      "address": "9 Birch Court, Fictionville",
+      "phone": "555-0177",
+      "email": "daniel.cho@example.test",
+      "insurance_id": "FX-102-4481",
+      "anchor_date": "2026-09-01",
+      "sections": {
+        "history": "Age 34. Right knee ACL tear from a football match. Moving cities, so the full chart is the transfer example.",
+        "meds": "Ibuprofen as needed.",
+        "labs": "No acute lab abnormalities recorded.",
+        "imaging": "MRI report: complete ACL tear, right knee.",
+        "notes": "Referral to orthopedics. Full transfer to Lakeside Family Medicine is a later flow."
+      }
+    },
+    {
+      "fictional": true,
+      "id": "priya-raman",
+      "role": "deid-example",
+      "name": "Priya Raman",
+      "dob": "1985-11-09",
+      "mrn": "RB-006203",
+      "address": "18 Cedar Street, Fictionville",
+      "phone": "555-0194",
+      "email": "priya.raman@example.test",
+      "insurance_id": "FX-330-7751",
+      "anchor_date": "2026-08-01",
+      "sections": {
+        "history": "Age 41. Type 2 diabetes.",
+        "meds": "Metformin.",
+        "labs": "A1c 7.8%. 90 days of glucose readings for a de-identified trend.",
+        "imaging": "None for this example.",
+        "notes": "Patient may later share a de-identified glucose trend with PulseFit."
+      }
+    }
+  ]
+}

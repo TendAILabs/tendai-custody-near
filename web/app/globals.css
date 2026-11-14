@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+  --bg: #f3f6f5;
+  --card: #ffffff;
+  --ink: #12211f;
+  --muted: #5c6f6c;
+  --line: #d5e3e0;
+  --teal: #0c6e6a;
+  --teal-deep: #084743;
+  --sand: #c9842a;
+  --good: #1f7a4d;
+  --good-bg: #e7f6ee;
+  --wait: #9a6408;
+  --wait-bg: #fff4df;
+  --bad: #b42318;
+  --bad-bg: #fdeceb;
+  --shadow: 0 10px 30px rgba(18, 33, 31, 0.06);
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #0e1716;
+  --card: #172221;
+  --ink: #e7f2f0;
+  --muted: #9bb0ac;
+  --line: #2c403c;
+  --teal: #3dbeb6;
+  --teal-deep: #d5f4f1;
+  --sand: #e8b15a;
+  --good: #8fd6b0;
+  --good-bg: #143328;
+  --wait: #f0c27a;
+  --wait-bg: #3a2c12;
+  --bad: #ffb4ab;
+  --bad-bg: #3f1816;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+button,
+a,
+input,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+@keyframes relay-travel {
+  0% {
+    left: 8%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: 86%;
+    opacity: 0;
+  }
+}
+
+.relay-dot {
+  animation: relay-travel 3.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .relay-dot {
+    animation: none;
+    left: 46%;
+    opacity: 1;
+  }
+}

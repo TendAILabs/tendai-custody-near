@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TendAI Custody · How this works</title>
+<meta name="description" content="TendAI Custody mockup. Fictional example data. Designed around HIPAA principles.">
+<link rel="stylesheet" href="shell.css">
+</head>
+<body class="">
+
+<div class="top">
+  <a class="brand" href="01-intro.html"><span class="mk">TC</span>TendAI Custody</a>
+  <div class="status"><span><span class="dot"></span>Near testnet</span><b>rr6c9910d7.testnet</b><span>Fictional data</span><span>Demo key</span></div>
+  <a class="go" href="02-guided.html#consent">Start <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+</div>
+<nav class="rail" aria-label="Workspace">
+<h6>Actors</h6>
+<a class="ri on" data-nav="clinic" href="02-guided.html#consent" style="--c:var(--h-clinic)"><span class="n">01</span><i class="sw"></i><span>Clinic A</span><span class="st ok">Sent</span></a>
+<a class="ri" data-nav="consent" href="02-guided.html#consent" style="--c:var(--ink)"><span class="n">02</span><i class="sw"></i><span>Maya</span><span class="st">Pending</span></a>
+<a class="ri" data-nav="hospital" href="02-guided.html#consent" style="--c:var(--h-hosp)"><span class="n">03</span><i class="sw"></i><span>Hospital B</span><span class="st">Waiting</span></a>
+<a class="ri" data-nav="reyes" href="02-guided.html#reyes" style="--c:var(--h-2nd)"><span class="n">04</span><i class="sw"></i><span>Dr. Reyes</span><span class="st">Idle</span></a>
+<a class="ri" data-nav="deid" href="02-guided.html#reyes" style="--c:var(--h-app)"><span class="n">05</span><i class="sw"></i><span>PulseFit</span><span class="st">Idle</span></a>
+<h6>Proof</h6>
+<a class="ri" data-nav="timeline" href="05-log.html" style="--c:var(--sig)"><span class="n">06</span><i class="sw"></i><span>Custody</span><span class="st">On NEAR</span></a>
+<a class="ri" data-nav="verify" href="02-guided.html#consent" style="--c:var(--sig)"><span class="n">07</span><i class="sw"></i><span>Verification</span><span class="st">Ready</span></a>
+<a class="ri" data-nav="revoked" href="02-guided.html#consent" style="--c:var(--red)"><span class="n">08</span><i class="sw"></i><span>Access</span><span class="st">3 holders</span></a>
+<h6>Guides</h6>
+<a class="ri" data-nav="help" href="03-help.html" style="--c:var(--ink)"><span class="n">09</span><i class="sw"></i><span>Help</span><span class="st"></span></a>
+<a class="ri" data-nav="support" href="04-support.html" style="--c:var(--ink)"><span class="n">10</span><i class="sw"></i><span>Support</span><span class="st"></span></a>
+<div class="case"><b>Riverbend Family Clinic</b>Example story on testnet.<br>Case RR-0142</div>
+</nav>
+<main class="stage" aria-hidden="true"></main>
+<div class="foot">
+  <span>Fictional data. Designed around <b>HIPAA principles</b>, not certified. De-identification is best effort, with a preview.</span>
+  <span class="flinks">
+    <a href="03-help.html">Help</a>
+    <a href="04-support.html">Support</a>
+    <a href="04-support.html#privacy">Privacy</a>
+    <a href="04-support.html#terms">Terms</a>
+  </span>
+</div>
+<div class="scrim" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+  <div class="intro">
+    <div class="eyebrow"><b>01</b><i></i>How this works</div>
+    <h1 id="intro-title">Three roles. Maya stays in <mark class="mark">control</mark>.</h1>
+    <p class="lede">This is a short walk through a fictional referral. You can follow the guided demo, or look around on your own.</p>
+    <div class="steps">
+      <div class="step" style="--c:var(--h-clinic)">
+        <div class="num"><i></i>01 · Clinic A</div>
+        <h2>The clinic sends the referral</h2>
+        <p>Clinic A offers Maya’s chart to the hospital. Only ids, hashes, and times are written to NEAR. Her health record stays off the chain.</p>
+      </div>
+      <div class="step" style="--c:var(--ink)">
+        <div class="num"><i></i>02 · Maya</div>
+        <h2>Maya reviews and approves</h2>
+        <p>Maya reads a sealed summary, leaves out anything the hospital does not need, then approves the share herself.</p>
+      </div>
+      <div class="step" style="--c:var(--h-hosp)">
+        <div class="num"><i></i>03 · Hospital B</div>
+        <h2>The hospital can open the chart</h2>
+        <p>After she approves, Hospital B can open the referral. That open is logged, so Maya can see who looked and when.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="02-guided.html#consent">Start guided demo <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+      <a class="btn ghost" href="02-guided.html#consent">Explore on my own</a>
+      <p class="note">Fictional data. Designed around HIPAA principles, not certified.</p>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

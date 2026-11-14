@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TendAI Custody | Patient-approved record transfers on NEAR</title>
+<meta name="description" content="Patient-approved medical record transfers with a chain-of-custody log on NEAR, a private NEAR AI Cloud TEE summary and de-identified app copies. Prototype with fictional example data. Designed around HIPAA principles.">
+<meta name="theme-color" content="#F4F6F8">
+<script>document.documentElement.classList.add('js');if(matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rm');</script>
+<style>
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex Mono";src:url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex Mono";src:url("fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Plex Mono";src:url("fonts/ibm-plex-mono-latin-600-normal.woff2") format("woff2");font-weight:600;font-style:normal;font-display:swap}
+/* =====================================================================
+   TendAI Custody landing, version A2 (polished)
+   Port notes: tokens live in :root and [data-tone]; each section block below
+   maps to one React component (Hero, Wall, What, Problem, How, Moments,
+   Audience, Proof, Cta, Footer). Motion is in app.js, one commented block each.
+   ===================================================================== */
+
+/* ===== 0. TOKENS ===== */
+:root{
+  /* palette */
+  --sig:#00C08B;--navy:#1A2744;--ink:#0F172A;--canvas:#F4F6F8;--teal:#0D9488;--teal-t:#0F766E;--mono-nav:#5EEAD4;--slate:#475569;
+  --h0:#0D9488;--h1:#3B82F6;--h2:#7C3AED;--h3:#F59E0B;       /* diagram and menu hues */
+  /* type */
+  --f-sans:"Plex Sans","Helvetica Neue",Arial,sans-serif;--f-mono:"Plex Mono",ui-monospace,Menlo,monospace;--f-eyebrow:var(--f-sans);
+  --wd:600;--wd2:500;--tr-display:-.035em;--tr-head:-.032em;--tr-body:-.011em;
+  /* shape */
+  --r-card:16px;--r-card-lg:24px;--r-btn:999px;--r-mbtn:999px;--r-pill:999px;--r-chip:999px;--r-xs:4px;--r-node:999px;--r-mk:8px;
+  --bw-btn:2px;--bw-card:1px;--bw-node:4px;
+  /* motion */
+  --ease:cubic-bezier(.16,1,.3,1);
+  /* layout */
+  --margin:clamp(20px,min(4vw,53px),64px);--gutter:clamp(16px,min(1.7vw,22px),24px);
+  --section:clamp(128px,17vh,280px);--section-half:clamp(64px,8.5vh,140px);
+}
+html{background:var(--canvas);scroll-behavior:smooth}
+html.rm{scroll-behavior:auto}
+body{margin:0;overflow-x:hidden;background:var(--canvas);padding-right:var(--sbw,0)}
+.hdr{padding-right:var(--sbw,0)}
+*{box-sizing:border-box}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* tone = per-section colour context (set via data-tone on header, menu and sections) */
+[data-tone="L"]{--bg:#F4F6F8;--fg:#0F172A;--mut:#475569;--card:#fff;--cardfg:#0F172A;--rule:#CBD5E1;--lab:#475569;--hl:#00C08B;--hlfg:#0F172A;--btn-bg:#0F172A;--btn-fg:#F4F6F8;--btn-ar:#00C08B;--grid:rgba(15,23,42,.07);--lead:#0F172A;
+  --p-ok-bg:#CCFBF1;--p-ok-fg:#0F766E;--p-wn-bg:#FEF3C7;--p-wn-fg:#92400E;--p-bd-bg:#FEE2E2;--p-bd-fg:#B91C1C;--p-in-bg:#DBEAFE;--p-in-fg:#1D4ED8;--p-ne-bg:#E2E8F0;--p-ne-fg:#475569}
+[data-tone="D"],[data-tone="K"]{--bg:#1A2744;--fg:#F4F6F8;--mut:#A3B2C8;--card:color-mix(in srgb,#fff 7%,#1A2744);--cardfg:#F4F6F8;--rule:rgba(244,246,248,.22);--lab:#A3B2C8;--hl:#00C08B;--hlfg:#0F172A;--btn-bg:#00C08B;--btn-fg:#0F172A;--btn-ar:#0F172A;--grid:rgba(244,246,248,.07);--lead:#F4F6F8;
+  --p-ok-bg:rgba(0,192,139,.18);--p-ok-fg:#5EEAD4;--p-wn-bg:rgba(245,158,11,.18);--p-wn-fg:#FCD34D;--p-bd-bg:rgba(239,68,68,.2);--p-bd-fg:#FCA5A5;--p-in-bg:rgba(59,130,246,.22);--p-in-fg:#93C5FD;--p-ne-bg:rgba(244,246,248,.1);--p-ne-fg:#CBD5E1}
+[data-tone="K"]{--bg:#0F172A;--card:color-mix(in srgb,#fff 6%,#0F172A)}
+[data-tone="SIG"]{--bg:#00C08B;--fg:#0F172A;--mut:#0F172A;--card:#F4F6F8;--cardfg:#0F172A;--rule:rgba(15,23,42,.5);--lab:#0F172A;--hl:#0F172A;--hlfg:#00C08B;--btn-bg:#0F172A;--btn-fg:#F4F6F8;--btn-ar:#00C08B;--grid:rgba(15,23,42,.12);--lead:#0F172A}
+[data-tone="L"]{--card-bd:#E2E8F0}[data-tone="D"],[data-tone="K"]{--card-bd:rgba(244,246,248,.1)}[data-tone="SIG"]{--card-bd:transparent}
+
+/* ===== 1. BASE LAYOUT ===== */
+.rr{position:relative;background:var(--canvas);color:#0F172A;font-family:var(--f-sans);letter-spacing:var(--tr-body);-webkit-font-smoothing:antialiased}
+.wrap{position:relative;width:100%;max-width:calc(1200px + 2*var(--margin));margin-inline:auto;padding-inline:var(--margin)}
+.g{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gutter)}
+.c-wide{grid-column:1/-1}.c-half{grid-column:span 6}.c-rail{grid-column:1/span 3}.c-main{grid-column:5/span 8}.c-fine{grid-column:9/span 4}
+.above{position:relative;z-index:6}
+.sec{position:relative;background:var(--bg);color:var(--fg)}
+/* ===== 2. SPINE (SVG overlay) ===== */
+.spine{position:absolute;left:0;top:0;width:100%;z-index:5;overflow:visible;pointer-events:none}
+
+/* ===== 3. HEADER ===== */
+.hdr{position:fixed;top:0;left:0;right:0;z-index:130;color:var(--fg)}
+.hdr .wrap{display:flex;align-items:center;justify-content:space-between;padding-block:18px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-.02em;transition:transform 420ms var(--ease),opacity 260ms linear}
+.logo .mk{width:30px;height:30px;border-radius:var(--r-mk);background:var(--teal);color:#fff;display:grid;place-items:center;font:600 12px/1 var(--f-mono);letter-spacing:0}
+.mbtn{position:relative;width:48px;height:48px;border:var(--bw-btn) solid currentColor;border-radius:var(--r-mbtn);background:var(--menu-fill,var(--bg));color:var(--fg);cursor:pointer;display:grid;place-items:center;padding:0}
+.mbtn{transition:background-color 220ms linear,color 220ms linear,border-color 220ms linear}
+.mbtn i{position:absolute;width:18px;height:2px;background:currentColor;border-radius:2px;transition:transform 320ms var(--ease)}
+.mbtn i:nth-child(1){transform:translateY(-4px)}.mbtn i:nth-child(2){transform:translateY(4px)}
+.menu-open .mbtn i:nth-child(1){transform:rotate(45deg)}.menu-open .mbtn i:nth-child(2){transform:rotate(-45deg)}
+.hdr.gone .logo{transform:translateY(-140%);opacity:0;pointer-events:none}
+
+/* ===== 4. MENU ===== */
+.menu{position:fixed;inset:0;z-index:110;background:var(--bg);color:var(--fg);transform:translateY(-100%);visibility:hidden;display:flex;flex-direction:column;transition:transform 900ms var(--ease)}
+.rm .menu{transition:none}
+.menu-cols{flex:1;display:grid;grid-template-columns:1.2fr 1fr;min-height:0}
+.menu nav{display:flex;flex-direction:column;justify-content:safe center;gap:4px;padding:112px var(--margin) 24px;min-height:0;overflow-y:auto}
+.mi{display:flex;align-items:baseline;gap:24px;padding:8px 0;color:var(--fg);opacity:0;transform:translateY(28px);transition:opacity 500ms ease var(--d,0ms),transform 500ms var(--ease) var(--d,0ms),color 200ms linear}
+.menu-open .mi{opacity:1;transform:none}
+.rm .mi{transition:none}
+.mi .n{font:600 12px/1 var(--f-mono);letter-spacing:.07em}
+.mi .t{font-size:clamp(30px,min(min(7vw,93px),9vh),96px);font-weight:var(--wd);letter-spacing:var(--tr-display);line-height:1.02}
+.menu-field{background:var(--card);transition:background 220ms linear}
+.menu-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:24px;padding:28px var(--margin)}
+.menu-info p,.menu-info a{display:block;margin:8px 0 0;font-size:15px;line-height:1.5;color:var(--fg)}
+
+/* ===== 5. TYPE, BUTTONS, PILLS ===== */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--lab);font-family:var(--f-eyebrow)}
+.eyebrow .sep{opacity:.7;margin:0 -2px}
+.chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:var(--r-chip);font:600 10.5px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;background:var(--p-wn-bg);color:var(--p-wn-fg)}
+.h-display{margin:0;font-weight:var(--wd);letter-spacing:var(--tr-display);line-height:.94;color:var(--fg)}
+.ln{display:block;overflow:hidden}
+.ln-in{display:block;padding-bottom:.1em}
+.js:not(.rm) [data-hline]:not(.in),.js:not(.rm) [data-mline]:not(.in){transform:translateY(108%)}
+[data-hline],[data-mline]{transition:transform 900ms var(--ease)}
+.js:not(.rm) [data-reveal]:not(.in){opacity:0;transform:translateY(24px)}
+[data-reveal]{transition:opacity 700ms ease,transform 700ms var(--ease)}
+.how h2,.numcard h3,.rcard h3,.q blockquote,.lead,.cta h2,.prob h2,.proof h2{text-wrap:balance}
+.mark{background:var(--hl);color:var(--hlfg);padding:.02em .16em;margin:0 -.04em;border-radius:var(--r-xs);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.verb{position:relative;isolation:isolate;display:inline-block;padding:0 .08em;margin:0 -.08em;border-radius:var(--r-xs)}
+.verb::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:var(--r-xs);background:var(--hl);transform:scaleX(0);transform-origin:100% 50%;transition:transform 520ms var(--ease)}
+.verb.on::before{transform:scaleX(1);transform-origin:0 50%}
+.rm .verb::before{transition:none}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;height:56px;padding:0 28px;font:500 16px/1 var(--f-sans);letter-spacing:.005em;background:var(--btn-bg);color:var(--btn-fg);border:var(--bw-btn) solid var(--btn-bd,transparent);border-radius:var(--r-btn);cursor:pointer;transition:background-color 150ms,transform 80ms}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:scale(.98)}
+.btn svg{width:20px;height:20px;color:var(--btn-ar);flex:none}
+.cue{display:inline-flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-family:var(--f-eyebrow)}
+.cue svg{width:16px;height:16px}
+.note{margin:20px 0 0;max-width:62ch;font:400 12.5px/1.5 var(--f-mono);color:var(--mut)}
+
+/* ===== 6. SECTION Hero ===== */
+/* load-in: headline lines rise first, then [data-load] items fade up, then the spine ring pops */
+.js:not(.rm):not(.ready) [data-load]{opacity:0;transform:translateY(14px)}
+[data-load]{transition:opacity 700ms ease var(--ld,0ms),transform 800ms var(--ease) var(--ld,0ms)}
+.hero .sub{margin:clamp(20px,3vh,32px) 0 0;max-width:56ch;font-size:clamp(16px,min(1.35vw,19px),20px);line-height:1.5;color:var(--mut);letter-spacing:-.008em}
+.hero .sub b{font-weight:600;color:var(--fg)}
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:112px 0 36px;overflow:hidden}
+.hero .h-display{font-size:clamp(46px,min(7.4vw,106px,11.6vh),176px)}
+.hero .row-top{display:flex;align-items:center;justify-content:flex-start;gap:22px;flex-wrap:wrap;margin-bottom:clamp(20px,3vh,40px)}
+.hero-foot{margin-top:clamp(24px,4vh,48px);align-items:end}
+.hero-foot .c-half{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.hero-foot .c-half+.c-half{justify-content:flex-end;align-items:flex-end}
+
+/* ===== 7. SECTION Wall (twin marquee) ===== */
+.wall{padding:var(--section) 0;overflow:hidden}
+.wall .wrap.pb{padding-bottom:40px}
+.rows{display:flex;flex-direction:column;gap:16px}
+.rowclip{overflow:hidden}
+.track{display:flex;gap:16px;width:max-content;will-change:transform;position:relative;z-index:6}
+.pcard{position:relative;flex:none;width:clamp(230px,min(18vw,262px),290px);height:clamp(116px,14vh,150px);padding:16px 18px;display:flex;flex-direction:column;justify-content:space-between;background:var(--card);color:var(--cardfg);border:var(--bw-card) solid var(--card-bd);border-radius:var(--r-card);transition:opacity 180ms linear}
+.pcard b{display:block;font-size:16px;font-weight:600;letter-spacing:-.015em;line-height:1.2}
+.pcard small{display:block;margin-top:3px;font-size:12.5px;color:var(--mut);letter-spacing:0}
+.pcard .pid{position:absolute;right:14px;top:14px;font:500 10.5px/1 var(--f-mono);letter-spacing:.06em;color:var(--mut);opacity:0;transition:opacity 180ms linear}
+.pcard:hover .pid{opacity:1}
+.rows:has(.pcard:hover) .pcard:not(:hover){opacity:.3}
+.pill{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:var(--r-pill);font:600 11.5px/1 var(--f-sans);letter-spacing:0;background:var(--p-ne-bg);color:var(--p-ne-fg)}
+.pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--p-ok-bg);color:var(--p-ok-fg)}.pill.wn{background:var(--p-wn-bg);color:var(--p-wn-fg)}.pill.bd{background:var(--p-bd-bg);color:var(--p-bd-fg)}.pill.in{background:var(--p-in-bg);color:var(--p-in-fg)}
+.rm .rows .track{flex-wrap:wrap;width:auto;padding-inline:var(--margin);justify-content:center}
+.rm .rows .dup{display:none}
+.rm .rowclip+.rowclip{display:none}
+
+/* ===== 8. SECTION What it is ===== */
+.who{padding:var(--section) 0 var(--section-half)}
+.stack{display:flex;flex-direction:column;gap:32px}
+.lead{margin:0;font-size:clamp(22px,min(2.9vw,38px),46px);font-weight:var(--wd2);letter-spacing:var(--tr-head);line-height:1.28;color:var(--lead)}
+
+/* ===== 9. SECTION Problem ===== */
+.prob{padding:var(--section) 0}
+.prob .eyebrow-row{margin-bottom:var(--section-half)}
+.prob h2{margin:0;font-size:clamp(40px,min(7.4vw,98px),158px);font-weight:var(--wd);letter-spacing:var(--tr-display);line-height:.96}
+.fine{display:flex;flex-direction:column;gap:16px;margin-top:var(--section-half)}
+.fine .bar{display:block;width:72px;height:4px;border-radius:var(--r-pill);background:var(--hl)}
+.fine p{margin:0;font-size:15px;line-height:1.6;color:var(--mut)}
+
+/* ===== 10. SECTION How it works (diagram, numbered cards) ===== */
+.how{padding:var(--section) 0}
+.how h2{margin:0;font-size:clamp(32px,min(4.4vw,58px),76px);font-weight:var(--wd);letter-spacing:var(--tr-display);line-height:1}
+.how .left{display:flex;flex-direction:column;gap:32px;padding-right:clamp(0px,min(3vw,40px),64px)}
+.how .left p{margin:0;font-size:clamp(17px,min(1.3vw,17.5px),20px);line-height:1.6;color:var(--mut);max-width:62ch}
+.conn{position:relative;padding:clamp(28px,min(3vw,40px),56px) clamp(32px,min(3.4vw,45px),56px) clamp(36px,3vw,48px);background:var(--card);color:var(--cardfg);border:var(--bw-card) solid var(--card-bd);border-radius:var(--r-card-lg)}
+.conn svg.cs{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.cgrid{position:relative;display:grid;grid-template-columns:auto minmax(24px,1fr) auto minmax(24px,1fr) auto;align-items:center}
+.nw{position:relative;display:flex;align-items:center;justify-content:center}
+.node{flex:none;width:clamp(56px,min(5vw,66px),84px);height:clamp(56px,min(5vw,66px),84px);border-radius:var(--r-node);border:var(--bw-node) solid var(--nc,currentColor);background:var(--card);display:grid;place-items:center;color:var(--cardfg)}
+.node svg{width:46%;height:46%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nl{position:absolute;top:calc(100% + 11px);left:50%;transform:translateX(-50%);font:600 10.5px/1.25 var(--f-eyebrow);letter-spacing:.07em;text-transform:uppercase;color:var(--mut);text-align:center;white-space:nowrap}
+.targets{display:flex;flex-direction:column;gap:clamp(38px,min(4.4vw,58px),62px);align-items:center;padding-bottom:22px}
+.cnote{margin:30px 0 0;position:relative;font:400 11.5px/1.4 var(--f-mono);color:var(--mut)}
+.numrow{margin-top:var(--section-half);row-gap:var(--gutter)}
+.numcard{grid-column:span 4;position:relative;padding:clamp(24px,2.4vw,32px);min-height:clamp(240px,30vh,300px);display:flex;flex-direction:column;justify-content:space-between;background:var(--card);color:var(--cardfg);border:var(--bw-card) solid var(--card-bd);border-radius:var(--r-card)}
+.numcard .num{width:34px;height:34px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font:600 12px/1 var(--f-mono)}
+.numcard h3{margin:0 0 10px;font-size:clamp(24px,min(2.5vw,34px),36px);font-weight:var(--wd2);letter-spacing:var(--tr-head);line-height:1.02}
+.numcard p{margin:0;font-size:14.5px;line-height:1.55;color:var(--mut)}
+
+/* ===== 11. SECTION Moments ===== */
+.why{padding:var(--section) 0 0}
+.why .eyebrow-row{margin-bottom:var(--section-half)}
+.rcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gutter)}
+.rcard{padding:clamp(22px,2.2vw,28px);color:#F4F6F8;border:var(--bw-card) solid var(--rc-bd,transparent);border-radius:var(--r-card);min-height:clamp(220px,30vh,300px)}
+.rcard .eyebrow{color:rgba(244,246,248,.86);margin-bottom:26px}
+.rcard h3{margin:0 0 14px;font-size:clamp(22px,min(2.3vw,31px),32px);font-weight:var(--wd2);letter-spacing:var(--tr-head);line-height:1.04}
+.rcard p{margin:0;font-size:14.5px;line-height:1.55}
+
+/* ===== 12. SECTION Audience ===== */
+.for{padding:var(--section) 0}
+.for .g2{margin-top:var(--section-half);row-gap:var(--gutter)}
+.clients{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gutter)}
+.clients>.cl{grid-column:span 4}.clients>.cl:nth-child(4){grid-column:3/span 4}
+.cl{min-height:clamp(112px,14vh,140px);padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;background:var(--card);color:var(--cardfg);border:var(--bw-card) solid var(--card-bd);border-radius:var(--r-card)}
+.cl .wm{font-size:clamp(22px,2.1vw,28px);font-weight:var(--wd);letter-spacing:-.03em;line-height:1}
+.cl .wm em{font-style:normal;font-family:var(--f-mono);font-weight:500;letter-spacing:-.04em}
+
+/* ===== 13. SECTION Proof ===== */
+.proof{padding:var(--section) 0}
+.proof h2{margin:18px 0 0;font-size:clamp(32px,min(5vw,66px),88px);font-weight:var(--wd);letter-spacing:var(--tr-display);line-height:.98}
+.qs{display:flex;flex-direction:column;gap:16px;margin-top:clamp(40px,6vh,72px)}
+.q{position:relative;z-index:6;padding:clamp(26px,min(3.6vw,48px),64px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,290px);gap:clamp(24px,min(4vw,53px),64px);align-items:end;background:var(--card);color:var(--cardfg);border:var(--bw-card) solid var(--card-bd);border-radius:var(--r-card-lg);transition:background-color 220ms linear,color 220ms linear}
+.q:hover{background:var(--sig);color:#0F172A}
+.q:hover .pill{background:rgba(15,23,42,.12);color:#0F172A}
+.q blockquote{margin:0;font-size:clamp(21px,min(2.9vw,40px),54px);font-weight:var(--wd2);letter-spacing:var(--tr-head);line-height:1.1;color:inherit}
+.q .meta{display:flex;flex-direction:column;gap:8px;font:500 11.5px/1.4 var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:inherit}
+.q .meta .pill{margin-top:6px}
+
+/* ===== 14. SECTION CTA ===== */
+.cta{padding:var(--section) 0 var(--section-half);overflow:hidden}
+.cta h2{margin:clamp(24px,4vh,48px) 0 0;font-size:clamp(40px,min(6.4vw,85px),124px);font-weight:var(--wd);letter-spacing:var(--tr-display);line-height:.96;color:var(--fg)}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:24px;margin-top:clamp(32px,5vh,56px)}
+.cta-row a.lnk{font-size:16px;font-weight:500;border-bottom:2px solid color-mix(in srgb,currentColor 40%,transparent);padding-bottom:3px}
+
+/* ===== 15. FOOTER ===== */
+.foot{padding:var(--section) 0 24px}
+.foot .g{row-gap:32px;padding-bottom:clamp(40px,6vh,72px)}
+.fb{grid-column:1/span 6}.fc{grid-column:span 2}.fc:nth-of-type(2){grid-column:7/span 2}
+.fc{display:flex;flex-direction:column;gap:12px}
+.fc a,.fc button,.fc span.t{font-size:15px;color:var(--fg);background:none;border:0;padding:0;text-align:left;cursor:pointer;font-family:var(--f-sans)}
+.fc .dim{color:var(--mut)}
+.foot p.tag{margin:20px 0 0;font-size:15px;line-height:1.55;color:var(--mut);max-width:30ch}
+.legal{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--mut)}
+.legal p{margin:0;max-width:70ch;line-height:1.5}
+.btt{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--f-eyebrow);letter-spacing:.1em;text-transform:uppercase;color:var(--fg);background:none;border:0;cursor:pointer}
+.btt svg{width:14px;height:14px}
+
+/* ===== 16. RESPONSIVE ===== */
+@media (max-width:1024px){
+  .g{grid-template-columns:repeat(8,minmax(0,1fr))}
+  .c-half{grid-column:1/-1}.c-rail{grid-column:1/-1}.c-main{grid-column:1/-1}.c-fine{grid-column:3/-1}
+  .hero-foot .c-half+.c-half{display:none}
+  .menu-field{display:none}.menu-cols{grid-template-columns:1fr}
+  .numcard{grid-column:span 8}
+  .clients>.cl{grid-column:span 4}.clients>.cl:nth-child(4){grid-column:span 4}
+  .rcards{grid-template-columns:1fr}
+  .q{grid-template-columns:1fr;align-items:start}
+  .fb{grid-column:1/-1}.fc{grid-column:span 3}.fc:nth-of-type(2){grid-column:span 3}
+  .how .left{padding-right:0}
+}
+@media (max-width:640px){
+  :root{--section:clamp(88px,12vh,128px);--section-half:clamp(48px,7vh,72px)}
+  /* wall: smaller cards so 1.5 cards are not the whole story, two rows read as a ticker */
+  .wall{padding-bottom:var(--section-half)}
+  .wall .wrap.pb{padding-bottom:28px}
+  .rows,.track{gap:12px}
+  .pcard{width:min(206px,56vw);height:112px;padding:14px 16px}
+  .pcard b{font-size:15px}.pcard small{font-size:12px}
+  /* diagram: vertical tree, labels beside nodes, no label collisions */
+  .conn{padding:28px 24px 26px}
+  .cgrid{display:flex;flex-direction:column;align-items:flex-start;gap:0}
+  .cgrid .sp{display:none}
+  .nw{justify-content:flex-start;gap:16px}
+  .node{width:54px;height:54px}
+  .nl{position:static;transform:none;text-align:left;white-space:normal;max-width:none;font-size:11px}
+  .cgrid>.sp+.nw{margin-top:34px}
+  .targets{margin:34px 0 0 clamp(44px,15vw,60px);padding:0;gap:22px;align-items:flex-start}
+  .cnote{margin-top:26px}
+  .g{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .clients{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .clients>.cl,.clients>.cl:nth-child(4){grid-column:span 2}
+  .clients>.cl:last-child{grid-column:1/-1}
+  .numcard{grid-column:1/-1}
+  .c-fine{grid-column:1/-1}
+  .conn{padding-inline:clamp(24px,7vw,40px)}
+    .cue{display:none}
+  .fc{grid-column:span 2}.fc:nth-of-type(2){grid-column:span 2}
+  .mi .t{font-size:clamp(34px,10vw,56px)}
+  .hero{padding-top:120px}
+  .sec .wrap{padding-right:calc(var(--margin) + 6px)}
+  .hero .sub{max-width:34ch}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}html{scroll-behavior:auto}}
+
+</style></head>
+<body>
+<noscript><p style="font:16px/1.6 system-ui;padding:32px">TendAI Custody is a prototype landing page (fictional example data). It uses a little JavaScript for motion; the content is readable without it.</p></noscript>
+<div data-root class="rr" id="top">
+<svg class="spine" data-spine aria-hidden="true"></svg>
+
+<!-- COMPONENT Header: logo + menu button. Tone follows the section under it. -->
+<header class="hdr" data-hdr data-tone="L"><div class="wrap" data-load style="--ld:1100ms">
+  <a class="logo" href="#top" aria-label="TendAI Custody home"><span class="mk" aria-hidden="true">TC</span><span>TendAI Custody</span></a>
+  <button class="mbtn" data-mbtn aria-label="Open menu" aria-expanded="false" aria-controls="menu"><i></i><i></i></button>
+</div></header>
+
+<!-- COMPONENT Menu: full-screen overlay, hover recolors the right field. -->
+<div class="menu" id="menu" data-menu data-tone="D" role="dialog" aria-modal="true" aria-label="Site menu">
+  <div class="menu-cols">
+    <nav data-mlist aria-label="Site">
+      <a class="mi" data-mi href="#top"><span class="n" style="color:var(--h0)">01</span><span class="t">Home</span></a>
+      <a class="mi" data-mi href="#how"><span class="n" style="color:#93C5FD">02</span><span class="t">How it works</span></a>
+      <a class="mi" data-mi href="#proof"><span class="n" style="color:#C4B5FD">03</span><span class="t">Proof on NEAR</span></a>
+      <a class="mi" data-mi href="#cta"><span class="n" style="color:#FCD34D">04</span><span class="t">Guided demo</span></a>
+    </nav>
+    <div class="menu-field" data-field></div>
+  </div>
+  <div class="wrap menu-info">
+    <div><span class="eyebrow">Email</span><a href="mailto:hello@referralrelay.example">hello@referralrelay.example</a></div>
+    <div><span class="eyebrow">Status</span><p>Prototype. Fictional example data only.</p></div>
+    <div><span class="eyebrow">Time zone</span><p>Bangkok, UTC+7</p></div>
+  </div>
+</div>
+
+<main data-main>
+
+<!-- SECTION 01 Hero (components/landing/Hero) -->
+<section class="sec hero" data-s="hero" data-tone="L">
+ <div class="wrap">
+  <div class="row-top" data-load style="--ld:900ms"><span class="eyebrow"><span class="ix">01</span><span class="sep">/</span><span class="lbl">patient-approved</span></span></div>
+  <h1 class="h-display">
+   <span class="ln"><span class="ln-in" data-hline>Patients <span class="verb" data-verb>share</span>,</span></span>
+   <span class="ln"><span class="ln-in" data-hline><span class="verb" data-verb>approve</span>, and</span></span>
+   <span class="ln"><span class="ln-in" data-hline><span class="verb" data-verb>revoke</span> their</span></span>
+   <span class="ln"><span class="ln-in" data-hline>own records</span></span>
+  </h1>
+  <p class="sub above" data-load style="--ld:1000ms">Records move between clinics, hospitals and apps only after the patient approves. Every step is written to a chain-of-custody log on <b>NEAR</b>.</p>
+  <div class="g hero-foot above" data-load style="--ld:1100ms">
+   <div class="c-half"><a class="btn" href="#cta">Open the guided demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a></div>
+   <div class="c-half"><a class="cue" href="#wall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15M6 13l6 6 6-6"/></svg>Scroll</a></div>
+  </div>
+  <p class="note above" data-load style="--ld:1200ms">Designed around HIPAA principles. Every name and number on this page is fictional example data.</p>
+ </div>
+</section>
+
+<!-- SECTION 02 Wall: twin marquee of status pills (components/landing/Wall) -->
+<section class="sec wall" id="wall" data-s="wall" data-tone="L">
+ <div class="wrap pb"><span class="eyebrow"><span class="ix">02</span><span class="sep">/</span><span class="lbl">live control</span> <span class="chip">Example data</span></span></div>
+ <div class="rows" role="group" aria-label="Examples of shared records and their status">
+  <div class="rowclip"><div class="track" data-marquee="0"><div class="pcard"><span class="pid">REL-0412 / EXAMPLE</span><div><b>St. Aster General</b><small>Transfer</small></div><span class="pill ok">Approved</span></div><div class="pcard"><span class="pid">REL-0413 / EXAMPLE</span><div><b>Dr. Reyes</b><small>Second-opinion share</small></div><span class="pill ok">Approved</span></div><div class="pcard"><span class="pid">REL-0414 / EXAMPLE</span><div><b>PulseFit app</b><small>De-identified copy</small></div><span class="pill in">Preview first</span></div><div class="pcard"><span class="pid">REL-0415 / EXAMPLE</span><div><b>Custody entry</b><small>Logged on NEAR</small></div><span class="pill ok">Logged</span></div><div class="pcard"><span class="pid">REL-0416 / EXAMPLE</span><div><b>Summary (TEE)</b><small>NEAR AI Cloud</small></div><span class="pill in">Patient review</span></div><div class="pcard"><span class="pid">REL-0417 / EXAMPLE</span><div><b>Imaging set</b><small>Three scans</small></div><span class="pill wn">Expires 09:00</span></div><div class="pcard"><span class="pid">REL-0418 / EXAMPLE</span><div><b>Clinic notes</b><small>Held back</small></div><span class="pill ne">Not shared</span></div><div class="pcard"><span class="pid">REL-0419 / EXAMPLE</span><div><b>Dr. Lena Park</b><small>Referral</small></div><span class="pill wn">Pending</span></div><div class="pcard"><span class="pid">REL-0420 / EXAMPLE</span><div><b>Northgate Imaging</b><small>Imaging only</small></div><span class="pill bd">Revoked</span></div><div class="pcard"><span class="pid">REL-0421 / EXAMPLE</span><div><b>Wellness app</b><small>Best-effort de-id</small></div><span class="pill in">Preview first</span></div><div class="pcard"><span class="pid">REL-0422 / EXAMPLE</span><div><b>Lab results</b><small>Last 12 months</small></div><span class="pill ok">Shared</span></div><div class="pcard"><span class="pid">REL-0423 / EXAMPLE</span><div><b>Cardiology consult</b><small>Thu 10:30</small></div><span class="pill ok">Approved</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0412 / EXAMPLE</span><div><b>St. Aster General</b><small>Transfer</small></div><span class="pill ok">Approved</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0413 / EXAMPLE</span><div><b>Dr. Reyes</b><small>Second-opinion share</small></div><span class="pill ok">Approved</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0414 / EXAMPLE</span><div><b>PulseFit app</b><small>De-identified copy</small></div><span class="pill in">Preview first</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0415 / EXAMPLE</span><div><b>Custody entry</b><small>Logged on NEAR</small></div><span class="pill ok">Logged</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0416 / EXAMPLE</span><div><b>Summary (TEE)</b><small>NEAR AI Cloud</small></div><span class="pill in">Patient review</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0417 / EXAMPLE</span><div><b>Imaging set</b><small>Three scans</small></div><span class="pill wn">Expires 09:00</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0418 / EXAMPLE</span><div><b>Clinic notes</b><small>Held back</small></div><span class="pill ne">Not shared</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0419 / EXAMPLE</span><div><b>Dr. Lena Park</b><small>Referral</small></div><span class="pill wn">Pending</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0420 / EXAMPLE</span><div><b>Northgate Imaging</b><small>Imaging only</small></div><span class="pill bd">Revoked</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0421 / EXAMPLE</span><div><b>Wellness app</b><small>Best-effort de-id</small></div><span class="pill in">Preview first</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0422 / EXAMPLE</span><div><b>Lab results</b><small>Last 12 months</small></div><span class="pill ok">Shared</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0423 / EXAMPLE</span><div><b>Cardiology consult</b><small>Thu 10:30</small></div><span class="pill ok">Approved</span></div></div></div>
+  <div class="rowclip"><div class="track" data-marquee="1"><div class="pcard"><span class="pid">REL-0423 / EXAMPLE</span><div><b>Cardiology consult</b><small>Thu 10:30</small></div><span class="pill ok">Approved</span></div><div class="pcard"><span class="pid">REL-0422 / EXAMPLE</span><div><b>Lab results</b><small>Last 12 months</small></div><span class="pill ok">Shared</span></div><div class="pcard"><span class="pid">REL-0421 / EXAMPLE</span><div><b>Wellness app</b><small>Best-effort de-id</small></div><span class="pill in">Preview first</span></div><div class="pcard"><span class="pid">REL-0420 / EXAMPLE</span><div><b>Northgate Imaging</b><small>Imaging only</small></div><span class="pill bd">Revoked</span></div><div class="pcard"><span class="pid">REL-0419 / EXAMPLE</span><div><b>Dr. Lena Park</b><small>Referral</small></div><span class="pill wn">Pending</span></div><div class="pcard"><span class="pid">REL-0418 / EXAMPLE</span><div><b>Clinic notes</b><small>Held back</small></div><span class="pill ne">Not shared</span></div><div class="pcard"><span class="pid">REL-0417 / EXAMPLE</span><div><b>Imaging set</b><small>Three scans</small></div><span class="pill wn">Expires 09:00</span></div><div class="pcard"><span class="pid">REL-0416 / EXAMPLE</span><div><b>Summary (TEE)</b><small>NEAR AI Cloud</small></div><span class="pill in">Patient review</span></div><div class="pcard"><span class="pid">REL-0415 / EXAMPLE</span><div><b>Custody entry</b><small>Logged on NEAR</small></div><span class="pill ok">Logged</span></div><div class="pcard"><span class="pid">REL-0414 / EXAMPLE</span><div><b>PulseFit app</b><small>De-identified copy</small></div><span class="pill in">Preview first</span></div><div class="pcard"><span class="pid">REL-0413 / EXAMPLE</span><div><b>Dr. Reyes</b><small>Second-opinion share</small></div><span class="pill ok">Approved</span></div><div class="pcard"><span class="pid">REL-0412 / EXAMPLE</span><div><b>St. Aster General</b><small>Transfer</small></div><span class="pill ok">Approved</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0423 / EXAMPLE</span><div><b>Cardiology consult</b><small>Thu 10:30</small></div><span class="pill ok">Approved</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0422 / EXAMPLE</span><div><b>Lab results</b><small>Last 12 months</small></div><span class="pill ok">Shared</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0421 / EXAMPLE</span><div><b>Wellness app</b><small>Best-effort de-id</small></div><span class="pill in">Preview first</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0420 / EXAMPLE</span><div><b>Northgate Imaging</b><small>Imaging only</small></div><span class="pill bd">Revoked</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0419 / EXAMPLE</span><div><b>Dr. Lena Park</b><small>Referral</small></div><span class="pill wn">Pending</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0418 / EXAMPLE</span><div><b>Clinic notes</b><small>Held back</small></div><span class="pill ne">Not shared</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0417 / EXAMPLE</span><div><b>Imaging set</b><small>Three scans</small></div><span class="pill wn">Expires 09:00</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0416 / EXAMPLE</span><div><b>Summary (TEE)</b><small>NEAR AI Cloud</small></div><span class="pill in">Patient review</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0415 / EXAMPLE</span><div><b>Custody entry</b><small>Logged on NEAR</small></div><span class="pill ok">Logged</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0414 / EXAMPLE</span><div><b>PulseFit app</b><small>De-identified copy</small></div><span class="pill in">Preview first</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0413 / EXAMPLE</span><div><b>Dr. Reyes</b><small>Second-opinion share</small></div><span class="pill ok">Approved</span></div><div class="pcard dup" aria-hidden="true"><span class="pid">REL-0412 / EXAMPLE</span><div><b>St. Aster General</b><small>Transfer</small></div><span class="pill ok">Approved</span></div></div></div>
+ </div>
+</section>
+
+<!-- SECTION 03 What it is (components/landing/What) -->
+<section class="sec who" id="what" data-s="who" data-tone="L">
+ <div class="wrap"><div class="g">
+  <div class="c-rail"><span class="eyebrow"><span class="ix">03</span><span class="sep">/</span><span class="lbl">what it is</span></span></div>
+  <div class="c-main stack">
+   <p class="lead" data-reveal>TendAI Custody moves medical records between clinics, hospitals and apps only after the patient <span class="mark">approves each share</span>. The patient sees who has what and can revoke access at any time.</p>
+   <p class="lead" data-reveal>Before approving, the patient reads a summary made in a <span class="mark">NEAR AI Cloud TEE</span>. Every approval, open and revoke lands in a custody log on NEAR.</p>
+  </div>
+ </div></div>
+</section>
+
+<!-- SECTION 04 Problem (components/landing/Problem) -->
+<section class="sec prob" data-s="prob" data-tone="D">
+ <div class="wrap">
+  <div class="eyebrow-row"><span class="eyebrow"><span class="ix">04</span><span class="sep">/</span><span class="lbl">the problem</span></span></div>
+  <h2><span class="ln"><span class="ln-in" data-mline>Records shouldn't</span></span><span class="ln"><span class="ln-in" data-mline>travel by fax or</span></span><span class="ln"><span class="ln-in" data-mline>by guesswork</span></span></h2>
+  <div class="g"><div class="c-fine fine" data-reveal>
+   <span class="bar" aria-hidden="true"></span>
+   <p>Referrals still run on faxes, portals and phone calls. Patients cannot see who received what, and clinics cannot tell which copy is current.</p>
+   <p>Revoking is the hard part. TendAI Custody stops new access right away. It cannot erase a copy someone already downloaded, and it says so up front.</p>
+  </div></div>
+ </div>
+</section>
+
+<!-- SECTION 05 How it works: diagram + three numbered cards (components/landing/How) -->
+<section class="sec how" id="how" data-s="how" data-tone="L">
+ <div class="wrap">
+  <div class="g" style="margin-bottom:var(--section-half)"><div class="c-wide"><span class="eyebrow"><span class="ix">05</span><span class="sep">/</span><span class="lbl">how it works</span></span></div></div>
+  <div class="g" style="align-items:center;row-gap:var(--section-half)">
+   <div class="c-half left">
+    <h2 data-reveal>A relay between the patient and every place a record has to go</h2>
+    <p data-reveal>The patient picks the sections and a recipient. The recipient gets an expiring, ticketed link, and the approval is logged on NEAR.</p>
+    <p data-reveal>App copies are de-identified on a best-effort basis. The patient sees a preview before anything is sent.</p>
+   </div>
+   <div class="c-half">
+    <div class="conn above" data-conn>
+     <svg class="cs" data-cs aria-hidden="true"></svg>
+     <div class="cgrid">
+      <div class="nw"><div class="node" data-node="source"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-4 3-6.6 7-6.6s7 2.6 7 6.6"/></svg></div><span class="nl">Patient</span></div>
+      <div class="sp" aria-hidden="true"></div>
+      <div class="nw"><div class="node" data-node="hub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 10a7 7 0 0 1 12-3.2"/><path d="M18.5 14a7 7 0 0 1-12 3.2"/><path d="M17.5 3.5v3.6h-3.6"/><path d="M6.5 20.5v-3.6h3.6"/></svg></div><span class="nl">TendAI Custody</span></div>
+      <div class="sp" aria-hidden="true"></div>
+      <div class="targets">
+       <div class="nw"><div class="node" data-node="t0" style="--nc:var(--h0)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div><span class="nl">Clinic</span></div>
+       <div class="nw"><div class="node" data-node="t1" style="--nc:var(--h1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V8.5l8-4.5 8 4.5V21"/><path d="M9.5 21v-5h5v5M12 9v4M10 11h4"/></svg></div><span class="nl">Hospital</span></div>
+       <div class="nw"><div class="node" data-node="t2" style="--nc:var(--h2)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h10v7H8l-3 3v-3H4z"/><path d="M16 9h4v8h-1v3l-3-3h-5v-2"/></svg></div><span class="nl">Second opinion</span></div>
+       <div class="nw"><div class="node" data-node="t3" style="--nc:var(--h3)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg></div><span class="nl">Apps, de-identified</span></div>
+      </div>
+     </div>
+     <p class="cnote">Example flow. Each hop is logged on NEAR. Fictional data.</p>
+    </div>
+   </div>
+  </div>
+  <div class="g numrow">
+   <div class="numcard above" data-reveal><span class="num">01</span><div><h3>Patient-approved<br>transfers</h3><p>Pick sections and a recipient. Nothing leaves without a yes, and a second-opinion share works the same way.</p></div></div>
+   <div class="numcard above" data-reveal><span class="num">02</span><div><h3>A private summary,<br>read first</h3><p>A NEAR AI Cloud TEE writes the summary. Apps get de-identified copies, best effort, with a preview before sending.</p></div></div>
+   <div class="numcard above" data-reveal><span class="num">03</span><div><h3>A custody log<br>on NEAR</h3><p>Approve, open, expire and revoke events are recorded. Revoking stops new access but cannot erase downloaded copies.</p></div></div>
+  </div>
+ </div>
+</section>
+
+<!-- SECTION 06 Moments: three colour cards (components/landing/Moments) -->
+<section class="sec why" data-s="why" data-tone="L">
+ <div class="wrap">
+  <div class="eyebrow-row"><span class="eyebrow"><span class="ix">06</span><span class="sep">/</span><span class="lbl">three moments</span></span></div>
+  <div class="rcards">
+   <div class="rcard above" style="background:#0F766E;--rc-bd:var(--h0)"><span class="eyebrow">Moment 1</span><h3>A referral to a specialist</h3><p>The front desk asks, the patient approves on a phone, and the specialist opens the record for a short window. No fax, no CD.</p></div>
+   <div class="rcard above" style="background:#1D4ED8;--rc-bd:var(--h1)"><span class="eyebrow">Moment 2</span><h3>A second-opinion share</h3><p>Send imaging and notes to another doctor. The patient chooses what goes, reads the private summary first, and can stop it later.</p></div>
+   <div class="rcard above" style="background:#BE123C;--rc-bd:#E11D48"><span class="eyebrow">Moment 3</span><h3>Changing your mind</h3><p>Revoke and new opens are blocked. A copy that was already downloaded stays with its holder, and the log shows that too.</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- SECTION 07 Audience (components/landing/Audience) -->
+<section class="sec for" data-s="for" data-tone="L">
+ <div class="wrap">
+  <div class="g"><div class="c-rail"><span class="eyebrow"><span class="ix">07</span><span class="sep">/</span><span class="lbl">who it is for</span></span></div>
+   <div class="c-main"><p class="lead" data-reveal>Built for <span class="mark">clinic staff first</span>. TendAI Custody handles the sharing layer so front desks and care teams stay on care, not paperwork.</p></div></div>
+  <div class="clients g2" style="margin-top:var(--section-half)">
+   <div class="cl above"><span class="wm">Riverbend <em>Family</em></span><span class="eyebrow">Primary care</span></div>
+   <div class="cl above"><span class="wm">St. Aster General</span><span class="eyebrow">Hospital</span></div>
+   <div class="cl above"><span class="wm">Northgate <em>Imaging</em></span><span class="eyebrow">Imaging centre</span></div>
+   <div class="cl above"><span class="wm">Reyes Cardiology</span><span class="eyebrow">Second opinion</span></div>
+   <div class="cl above"><span class="wm">Pulse<em>Fit</em></span><span class="eyebrow">Health app</span></div>
+  </div>
+ </div>
+</section>
+
+<!-- SECTION 08 Proof on NEAR: custody events (components/landing/Proof) -->
+<section class="sec proof" id="proof" data-s="proof" data-tone="D">
+ <div class="wrap">
+  <span class="eyebrow"><span class="ix">08</span><span class="sep">/</span><span class="lbl">proof on near</span></span>
+  <h2 data-reveal>Proof, not<br>promises</h2>
+  <div class="qs">
+   <div class="q" data-reveal><blockquote>Maya approved a share with St. Aster General.</blockquote><div class="meta"><span>08:12 Bangkok</span><span>Event 0001 / example data</span><span class="pill ok">Logged on NEAR</span></div></div>
+   <div class="q" data-reveal><blockquote>The hospital opened the record. The ticket was valid for a short window.</blockquote><div class="meta"><span>08:14 Bangkok</span><span>Event 0002 / example data</span><span class="pill in">Ticket expired</span></div></div>
+   <div class="q" data-reveal><blockquote>Maya revoked access. New opens are blocked. Downloaded copies remain.</blockquote><div class="meta"><span>09:02 Bangkok</span><span>Event 0003 / example data</span><span class="pill bd">Revoked</span></div></div>
+  </div>
+ </div>
+</section>
+
+<!-- SECTION 09 CTA (components/landing/Cta) -->
+<section class="sec cta" id="cta" data-s="cta" data-tone="SIG">
+ <div class="wrap">
+  <span class="eyebrow"><span class="ix">09</span><span class="sep">/</span><span class="lbl">try it</span></span>
+  <h2><span class="ln"><span class="ln-in" data-cline>See a referral</span></span><span class="ln"><span class="ln-in" data-cline>from approval</span></span><span class="ln"><span class="ln-in" data-cline>to revoke</span></span></h2>
+  <div class="cta-row above">
+   <a class="btn" href="#top">Open the guided demo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+   <a class="lnk" href="mailto:hello@referralrelay.example">hello@referralrelay.example</a>
+   <a class="lnk" href="#what">Security notes</a>
+  </div>
+ </div>
+</section>
+
+<!-- COMPONENT Footer -->
+<footer class="sec foot" data-s="foot" data-tone="D">
+ <div class="wrap">
+  <div class="g">
+   <div class="fb"><a class="logo" href="#top" style="transition:none"><span class="mk" aria-hidden="true">TC</span><span>TendAI Custody</span></a><p class="tag">Patient-approved record transfers with a custody log on NEAR. Prototype with example data.</p></div>
+   <div class="fc"><span class="eyebrow">Navigation</span><a href="#top">Home</a><a href="#how">How it works</a><a href="#proof">Proof on NEAR</a><a href="#cta">Guided demo</a></div>
+   <div class="fc"><span class="eyebrow">Notes</span><a href="#what">Security notes</a><span class="t dim">Example data only</span><span class="t dim">Built for a hackathon</span></div>
+   <div class="fc"><span class="eyebrow">Contact</span><button data-copy aria-label="Copy email address"><span data-copy-l>hello@referralrelay.example</span></button><span class="t dim">Bangkok, UTC+7</span></div>
+  </div>
+  <div class="legal"><p>Prototype. Designed around HIPAA principles. De-identification is best effort, with a preview before sending. Revoking stops new access but cannot erase copies already downloaded. All data shown is fictional.</p><button class="btt" data-btt>Back to top <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V5M6 11l6-6 6 6"/></svg></button></div>
+ </div>
+</footer>
+
+</main>
+</div>
+<script>
+/* =====================================================================
+   TendAI Custody landing, motion layer (vanilla, no dependencies)
+   Port map (Next.js): 1 env -> a tiny client util; 3 loader, 4 reveals,
+   5 verbs -> <Hero/> + <Reveal/> client components; 6 menu -> <Menu/>;
+   8 marquee -> <Wall/>; 9 spine -> <Spine/>; 10 diagram -> <FlowDiagram/>.
+   Rules: transform and opacity for anything that moves every frame; the
+   only non-compositor motion is the spine and diagram stroke-dashoffset.
+   Reads of layout are cached and refreshed on resize, never per scroll.
+   ===================================================================== */
+(function(){
+'use strict';
+
+/* ---------- 1. env, helpers, config ---------- */
+var CFG={ spine:{w:[32,16,8],ring:2.5,corner:2,hRun:120,ringTop:86,endDy:150,color:'#00C08B',flipTo:'#F4F6F8'}, conn:{w:4,corner:16},
+          menuHues:['#0D9488','#3B82F6','#7C3AED','#F59E0B'], menuInk:['#fff','#fff','#fff','#0F172A'] };
+var root=document.querySelector('[data-root]'), html=document.documentElement;
+var mq=matchMedia('(prefers-reduced-motion: reduce)'), reduced=mq.matches;
+function $(s,r){return (r||root).querySelector(s)} function $$(s,r){return Array.prototype.slice.call((r||root).querySelectorAll(s))}
+var state={menu:false,hidden:document.hidden,ready:false};
+var secs=$$('main > section, main > footer'), hdr=$('[data-hdr]'), menu=$('[data-menu]'), main=$('[data-main]');
+var layout={tops:[],bottoms:[],mTop:0,hdrY:42}; /* cached geometry, see measure() */
+
+/* ---------- 2. layout cache ---------- */
+function top(el){return el.getBoundingClientRect().top+scrollY}
+function measure(){
+  layout.tops=secs.map(top); layout.bottoms=secs.map(function(s,i){return layout.tops[i]+s.offsetHeight});
+  var m=$('[data-mline]'); layout.mTop=m?top(m.closest('h2')):0;
+  layout.hdrY=hdr.offsetHeight/2;
+}
+
+/* ---------- 3. loader: wait for fonts, then lines rise, extras fade, ring pops ---------- */
+var hlines=$$('[data-hline]'), verbs=$$('[data-verb]');
+function markReady(){
+  if(state.ready)return; state.ready=true;
+  hlines.forEach(function(el,i){el.style.transitionDelay=(reduced?0:i*90)+'ms';el.classList.add('in')});
+  html.classList.add('ready');
+  introSpine();
+  if(!reduced){setTimeout(startVerbs,820)} else { stepVerb(); }
+}
+function loader(){
+  if(reduced){showAll();markReady();return}
+  var fonts=document.fonts&&document.fonts.load?Promise.all([document.fonts.load('600 40px "Plex Sans"'),document.fonts.load('400 14px "Plex Mono"')]):Promise.resolve();
+  var go=function(){requestAnimationFrame(function(){measure();setupWall();spine=buildSpine();requestAnimationFrame(markReady)})};
+  var t=setTimeout(go,1600); fonts.then(function(){clearTimeout(t);go()},function(){clearTimeout(t);go()});
+}
+
+/* ---------- 4. reveals: IntersectionObserver for cards and copy, scroll-linked h2 lines ---------- */
+var reveals=$$('[data-reveal]'), mlines=$$('[data-mline]'), clines=$$('[data-cline]');
+function showAll(){reveals.concat(hlines,clines,mlines).forEach(function(e){e.classList.add('in')})}
+function setupReveals(){
+  reveals.forEach(function(el){
+    var sibs=Array.prototype.filter.call(el.parentElement.children,function(x){return x.hasAttribute('data-reveal')});
+    el.style.transitionDelay=Math.max(0,sibs.indexOf(el))*80+'ms';
+  });
+  if(reduced||!('IntersectionObserver' in window)){showAll();return}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return; io.unobserve(e.target);
+    if(e.target.hasAttribute('data-cta')){clines.forEach(function(el,i){el.style.transitionDelay=i*110+'ms';el.classList.add('in')})}
+    else e.target.classList.add('in');
+  })},{rootMargin:'0px 0px -12% 0px',threshold:0});
+  reveals.forEach(function(el){io.observe(el)});
+  if(clines.length){var h=clines[0].closest('h2');h.setAttribute('data-cta','');io.observe(h)}
+}
+var mDone=-1;
+function tickMLines(y,vh){
+  if(!mlines.length)return; var t=layout.mTop-y, n=0;
+  mlines.forEach(function(el,i){ if(reduced||t<vh*(0.9-i*0.07))n=i+1 });
+  if(n===mDone)return; mDone=n; mlines.forEach(function(el,i){el.classList.toggle('in',i<n)});
+}
+
+/* ---------- 5. verb highlight: scaleX wipe (compositor only), paused when hidden ---------- */
+var vi=-1, verbTimer=0;
+function stepVerb(){verbs.forEach(function(v){v.classList.remove('on')});vi=(vi+1)%verbs.length;verbs[vi].classList.add('on')}
+function startVerbs(){ if(reduced||verbTimer||state.hidden||!state.ready||!verbs.length)return; stepVerb(); verbTimer=setInterval(stepVerb,2500) }
+function stopVerbs(){clearInterval(verbTimer);verbTimer=0}
+
+/* ---------- 6. menu ---------- */
+var busyMenu=false;
+function setMenu(open){
+  state.menu=open; root.classList.toggle('menu-open',open);
+  menu.style.visibility='visible'; menu.style.transform=open?'translateY(0)':'translateY(-100%)';
+  if(open)html.style.setProperty('--sbw',(innerWidth-html.clientWidth)+'px'); /* keep layout still when the scrollbar disappears */
+  document.body.style.overflow=open?'hidden':'';
+  if(!open)html.style.removeProperty('--sbw');
+  main.inert=open;
+  $$('[data-mi]').forEach(function(el,i){el.style.setProperty('--d',open&&!reduced?(260+i*60)+'ms':'0ms')});
+  var b=$('[data-mbtn]'); b.setAttribute('aria-expanded',open); b.setAttribute('aria-label',open?'Close menu':'Open menu');
+  busyMenu=true; setTimeout(function(){busyMenu=false;polarity()},reduced?0:940);
+  polarity(open);
+  if(!open)setTimeout(function(){if(!state.menu)menu.style.visibility='hidden'},reduced?0:900);
+  if(open){var f=$('[data-mi]');setTimeout(function(){f&&f.focus()},reduced?0:320)}
+}
+$('[data-mbtn]').addEventListener('click',function(){setMenu(!state.menu)});
+addEventListener('keydown',function(e){if(e.key==='Escape'&&state.menu)setMenu(false)});
+(function(){
+  var field=$('[data-field]'), items=$$('[data-mi]'), btn=$('[data-mbtn]'), list=$('[data-mlist]');
+  function lit(i,it){field.style.background=CFG.menuHues[i];items.forEach(function(o){o.style.color=o===it?'var(--fg)':'var(--mut)'});if(field.offsetWidth>0){btn.style.color=CFG.menuInk[i];btn.style.background=CFG.menuHues[i]}}
+  function clear(){field.style.background='';items.forEach(function(o){o.style.color=''});btn.style.color='';btn.style.background=''}
+  items.forEach(function(it,i){
+    it.addEventListener('mouseenter',function(){lit(i,it)});
+    it.addEventListener('focus',function(){lit(i,it)});
+    it.addEventListener('blur',clear);
+    it.addEventListener('click',function(){setTimeout(function(){setMenu(false)},60)});
+  });
+  list.addEventListener('mouseleave',clear);
+})();
+
+/* ---------- 7. header polarity: colour follows the section under the header (cached tops) ---------- */
+function polarity(forceOpen){
+  var open=typeof forceOpen==='boolean'?forceOpen:state.menu, tone='L';
+  if(open){tone=menu.getAttribute('data-tone')}
+  else{ var py=layout.hdrY+scrollY; for(var i=0;i<secs.length;i++){ if(layout.tops[i]<=py&&layout.bottoms[i]>=py){tone=secs[i].getAttribute('data-tone');break} } }
+  if(hdr.getAttribute('data-tone')!==tone)hdr.setAttribute('data-tone',tone);
+}
+
+/* ---------- 8. marquee: two translate3d rows, scroll-velocity coupled, only ticks while on screen ---------- */
+var rows=$$('[data-marquee]'), off=[0,0], mw=[1,1], wallOn=false, vel=0, lastY=scrollY, lastT=0;
+function setupWall(){
+  mw=rows.map(function(r){return r.scrollWidth/2}); off[0]=off[0]%(mw[0]||1); off[1]=-mw[1]+((off[1]+mw[1])%(mw[1]||1));
+  if(!('IntersectionObserver' in window)){wallOn=true;return}
+  if(!setupWall.io){setupWall.io=new IntersectionObserver(function(es){wallOn=es[0].isIntersecting},{rootMargin:'120px'});setupWall.io.observe($('[data-s="wall"]'))}
+}
+function tickMarquee(dt){
+  if(reduced||rows.length!==2||!wallOn)return;
+  var sp=(0.028+Math.min(.5,vel*.16))*dt;
+  off[0]-=sp; if(off[0]<=-mw[0])off[0]+=mw[0];
+  off[1]+=sp; if(off[1]>=0)off[1]-=mw[1];
+  rows[0].style.transform='translate3d('+off[0].toFixed(2)+'px,0,0)'; rows[1].style.transform='translate3d('+off[1].toFixed(2)+'px,0,0)';
+}
+
+/* ---------- geometry helper: orthogonal polyline with rounded corners ---------- */
+function route(p,R){
+  var d='M '+p[0][0]+' '+p[0][1];
+  for(var i=1;i<p.length-1;i++){
+    var a=p[i-1],c=p[i],n=p[i+1];
+    var ix=Math.sign(c[0]-a[0]),iy=Math.sign(c[1]-a[1]),ox=Math.sign(n[0]-c[0]),oy=Math.sign(n[1]-c[1]);
+    var ri=Math.abs(c[0]-a[0])+Math.abs(c[1]-a[1]),ro=Math.abs(n[0]-c[0])+Math.abs(n[1]-c[1]);
+    var r=Math.min(R,ri/2,ro/2);
+    if(r<.5){d+=' L '+c[0]+' '+c[1];continue}
+    d+=' L '+(c[0]-ix*r)+' '+(c[1]-iy*r)+' Q '+c[0]+' '+c[1]+' '+(c[0]+ox*r)+' '+(c[1]+oy*r);
+  }
+  var l=p[p.length-1]; return d+' L '+l[0]+' '+l[1];
+}
+function bgOf(el){return getComputedStyle(el).getPropertyValue('--bg').trim()||'#F4F6F8'}
+
+/* ---------- 9. spine: SVG path drawn by scroll position ---------- */
+var spine=null;
+function buildSpine(){
+  var svg=$('[data-spine]'), W=root.clientWidth; if(!W)return null;
+  svg.setAttribute('shape-rendering','geometricPrecision');
+  var band=W>1024?0:(W>640?1:2), w=CFG.spine.w[band], ringR=CFG.spine.ring*w;
+  var S={};secs.forEach(function(s){S[s.getAttribute('data-s')]=s});
+  var wrap=$('.wrap',S.hero), wr=wrap.getBoundingClientRect(), cs0=getComputedStyle(wrap), pl=parseFloat(cs0.paddingLeft), pr=parseFloat(cs0.paddingRight);
+  var cl=wr.left+pl, cr=wr.right-pr, cw=cr-cl, rr=Math.max(0,W-cr);
+  var h1r=cl; $$('[data-hline]',S.hero).forEach(function(el){var rg=document.createRange();rg.selectNodeContents(el);var b=rg.getBoundingClientRect();if(b.right>h1r)h1r=b.right});
+  var R=CFG.spine.corner*w, H=CFG.spine.hRun, x, moveOff=function(s){return Math.min(70,parseFloat(getComputedStyle(s).paddingTop)*.45)};
+  var pts=[], y0=CFG.spine.ringTop+ringR+w/2;
+  if(band===0){
+    var hx=Math.min((h1r+cr)/2, cr-ringR-w/2-4); hx=Math.max(hx,h1r+w/2+40);
+    var L={hero:hx,wall:cl+.28*cw,who:cl+.28*cw,prob:cr+rr/2,how:cr+rr/2,why:cl+.62*cw,for:cl+.28*cw,proof:cl+.72*cw,cta:cl+.72*cw};
+    var order=['hero','wall','who','prob','how','why','for','proof','cta'];
+    pts.push([L.hero,y0+ringR]);
+    for(var i=1;i<order.length;i++){
+      var nx=L[order[i]], px=pts[pts.length-1][0]; if(Math.abs(nx-px)<1)continue;
+      var my=top(S[order[i]])+moveOff(S[order[i]]);
+      pts.push([px,my]); pts.push([nx,my]);
+    }
+    pts.push([L.cta,top(S.cta)+CFG.spine.endDy]);
+  }else{
+    var lane=W-Math.max(w/2+4,(W-cr)/2), hx2=W-(ringR+w/2+10), y1=top(S.wall)+40;
+    pts.push([hx2,y0+ringR]); pts.push([hx2,y1]); pts.push([lane,y1]); pts.push([lane,top(S.cta)+CFG.spine.endDy*.6]);
+  }
+  pts=pts.map(function(p){return [Math.round(p[0]),Math.round(p[1])]});
+  var q=[pts[0]]; for(var j=1;j<pts.length;j++){var a=q[q.length-1];if(Math.abs(a[0]-pts[j][0])<.5&&Math.abs(a[1]-pts[j][1])<.5)continue;q.push(pts[j])}
+  var out=[q[0]]; for(var k=1;k<q.length-1;k++){var p0=out[out.length-1],p1=q[k],p2=q[k+1];var col=(Math.abs(p0[0]-p1[0])<.5&&Math.abs(p1[0]-p2[0])<.5)||(Math.abs(p0[1]-p1[1])<.5&&Math.abs(p1[1]-p2[1])<.5);if(!col)out.push(p1)}
+  out.push(q[q.length-1]); pts=out;
+  var d=route(pts,R), ctaTop=top(S.cta), DOCH=Math.max(root.scrollHeight,ctaTop+800);
+  var sig=d+'|'+W+'|'+DOCH; if(spine&&spine.sig===sig)return spine; /* nothing moved: keep the live SVG so a refresh cannot pop or restart the draw */
+  svg.setAttribute('viewBox','0 0 '+W+' '+DOCH); svg.style.height=DOCH+'px'; svg.setAttribute('width',W);
+  var started=state.ready||reduced, heroBg=bgOf(S.hero), ctaBg=bgOf(S.cta), flip=CFG.spine.flipTo, col0=CFG.spine.color;
+  var m='<defs><linearGradient id="sg" gradientUnits="userSpaceOnUse" x1="0" y1="'+(ctaTop-1)+'" x2="0" y2="'+ctaTop+'"><stop offset="0" style="stop-color:'+col0+'"/><stop offset="1" style="stop-color:'+flip+'"/></linearGradient></defs>';
+  m+='<path data-sp d="'+d+'" fill="none" stroke="url(#sg)" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round"/>';
+  var sx=pts[0][0], sy=pts[0][1]-ringR, ex=pts[pts.length-1][0], ey=pts[pts.length-1][1];
+  m+='<circle data-s0 cx="'+sx+'" cy="'+sy+'" r="'+ringR+'" fill="'+heroBg+'" stroke="'+col0+'" stroke-width="'+w+'" style="transform-box:fill-box;transform-origin:center;transition:transform 600ms var(--ease),opacity 400ms linear;'+(started?'':'transform:scale(.2);opacity:0')+'"/>';
+  m+='<circle data-s1 cx="'+ex+'" cy="'+ey+'" r="'+ringR+'" fill="'+ctaBg+'" stroke="'+flip+'" stroke-width="'+w+'" opacity="0"/>';
+  svg.innerHTML=m;
+  var path=$('[data-sp]',svg), len=path.getTotalLength(), s0=$('[data-s0]',svg);
+  path.style.strokeDasharray=len; path.style.strokeDashoffset=started?0:len;
+  /* scroll position -> drawn length, horizontal runs get a scroll allowance of H px */
+  var tab=[],L2=0,tot=0,segs=[];
+  for(var s=0;s<pts.length-1;s++){var A=pts[s],B=pts[s+1],hz=Math.abs(A[1]-B[1])<.5,ln=Math.abs(A[0]-B[0])+Math.abs(A[1]-B[1]);segs.push({A:A,B:B,hz:hz,len:ln});tot+=ln}
+  var kk=len/tot;
+  for(var s2=0;s2<segs.length;s2++){
+    var sg=segs[s2];
+    if(sg.hz){tab.push([sg.A[1]-H/2,L2]);L2+=sg.len;tab.push([sg.A[1]+H/2,L2])}
+    else{var ph=s2>0&&segs[s2-1].hz, nh=s2<segs.length-1&&segs[s2+1].hz;var a2=sg.A[1]+(ph?H/2:0),b2=sg.B[1]-(nh?H/2:0);if(b2<a2)b2=a2;tab.push([a2,L2]);L2+=sg.len;tab.push([b2,L2])}
+  }
+  return {sig:sig,path:path,len:len,k:kk,tab:tab,s0:s0,s1:$('[data-s1]',svg),w:W,band:band,last:-1};
+}
+function lenAt(S,y){
+  var t=S.tab; if(y<=t[0][0])return 0; if(y>=t[t.length-1][0])return t[t.length-1][1]*S.k;
+  var lo=0,hi=t.length-1; while(hi-lo>1){var mid=(lo+hi)>>1;if(t[mid][0]<=y)lo=mid;else hi=mid}
+  var a=t[lo],b=t[hi]; var f=b[0]===a[0]?1:(y-a[0])/(b[0]-a[0]); return (a[1]+(b[1]-a[1])*f)*S.k;
+}
+function introSpine(){ /* draw the first stretch and pop the ring once the headline is in */
+  if(!spine)return; var S=spine;
+  if(reduced){S.path.style.strokeDashoffset=0;return}
+  S.s0.style.transform='scale(1)'; S.s0.style.opacity=1;
+  S.path.style.transition='stroke-dashoffset 1100ms var(--ease) 250ms';
+  S.last=-1; tickSpine(scrollY,innerHeight);
+  setTimeout(function(){if(spine&&spine.path)spine.path.style.transition=''},1500);
+}
+function tickSpine(y,vh){
+  var S=spine; if(!S)return; var L=Math.min(S.len,lenAt(S,y+vh*.62));
+  if(!reduced&&state.ready&&Math.abs(L-S.last)>0.4){S.last=L;S.path.style.strokeDashoffset=(S.len-L).toFixed(1)}
+  S.s1.setAttribute('opacity',(reduced||L>=S.len-1)?'1':'0');
+}
+
+/* ---------- 10. diagram: measured nodes routed into trunk and branches, drawn when in view ---------- */
+var conn=null, mobileMQ=matchMedia('(max-width:640px)');
+function buildConn(){
+  var wrap=$('[data-conn]'), svg=$('[data-cs]',wrap); if(!wrap)return null;
+  var box=wrap.getBoundingClientRect(); if(!box.width)return null;
+  function rel(el){var r=el.getBoundingClientRect();return{l:r.left-box.left,r:r.right-box.left,t:r.top-box.top,b:r.bottom-box.top,cx:r.left+r.width/2-box.left,cy:r.top+r.height/2-box.top}}
+  var src=$('[data-node="source"]',wrap),hub=$('[data-node="hub"]',wrap),tg=[0,1,2,3].map(function(i){return $('[data-node="t'+i+'"]',wrap)});
+  var S=rel(src),Hh=rel(hub), R=CFG.conn.corner, sw=CFG.conn.w, segs, boxes=tg.map(rel), hues=['var(--h0)','var(--h1)','var(--h2)','var(--h3)'];
+  if(mobileMQ.matches){ /* vertical tree: patient above relay, branches leave the relay downwards then turn right */
+    segs=[{d:route([[S.cx,S.b],[Hh.cx,Hh.t]],R),c:'currentColor'}];
+    segs.push({d:route([[Hh.cx,Hh.b],[Hh.cx,boxes[3].cy-30]],R),c:'currentColor'}); /* neutral trunk, coloured stubs turn off it */
+    boxes.forEach(function(T,i){segs.push({d:route([[Hh.cx,T.cy-30],[Hh.cx,T.cy],[T.l,T.cy]],R),c:hues[i]})});
+  }else{
+    var trunkX=S.r+Math.max(16,(Hh.l-S.r)/2); segs=[{d:route([[S.r,S.cy],[trunkX,S.cy],[trunkX,Hh.cy],[Hh.l,Hh.cy]],R),c:'currentColor'}];
+    var bx=Hh.r+Math.max(20,(Math.min.apply(null,boxes.map(function(t){return t.l}))-Hh.r)/2);
+    boxes.forEach(function(T,i){segs.push({d:route([[Hh.r,Hh.cy],[bx,Hh.cy],[bx,T.cy],[T.l,T.cy]],R),c:hues[i]})});
+  }
+  svg.setAttribute('viewBox','0 0 '+box.width+' '+box.height);
+  svg.innerHTML=segs.map(function(s){return '<path d="'+s.d+'" fill="none" stroke="'+s.c+'" stroke-width="'+sw+'" stroke-linecap="round" data-cp/>'}).join('');
+  var list=$$('[data-cp]',svg), drawn=conn?conn.drawn:false;
+  list.forEach(function(p){var l=p.getTotalLength();p.style.strokeDasharray=l;p.style.strokeDashoffset=(reduced||drawn)?0:l;p.style.transition=drawn?'none':'stroke-dashoffset 900ms var(--ease)'});
+  return{wrap:wrap,paths:list,drawn:drawn,w:box.width,h:box.height,topY:top(wrap)};
+}
+function tickConn(y,vh){
+  if(!conn)conn=buildConn(); if(!conn)return;
+  if(!conn.drawn&&conn.topY-y<vh*.82){conn.drawn=true;conn.paths.forEach(function(p,i){p.style.transitionDelay=i*110+'ms';p.style.strokeDashoffset='0'})}
+}
+
+/* ---------- 11. scheduler: one rAF-throttled scroll pass, one rAF loop for the marquee ---------- */
+var pending=false, raf=0;
+function onScroll(){ if(!pending){pending=true;requestAnimationFrame(scrollWork)} }
+var gone=false;
+function scrollWork(){
+  pending=false; var y=scrollY,vh=innerHeight;
+  tickSpine(y,vh); tickMLines(y,vh); tickConn(y,vh); if(!busyMenu)polarity();
+  var g=!state.menu&&y>100; if(g!==gone){gone=g;hdr.classList.toggle('gone',g)}
+}
+function frame(t){
+  raf=requestAnimationFrame(frame);
+  var dt=Math.min(60,t-(lastT||t)); lastT=t;
+  var y=scrollY; var tv=Math.abs(y-lastY)/Math.max(1,dt); vel+=(tv-vel)*.12; lastY=y;
+  tickMarquee(dt);
+}
+function start(){ if(raf||state.hidden)return; lastT=0; raf=requestAnimationFrame(frame); startVerbs() }
+function stop(){ cancelAnimationFrame(raf);raf=0; stopVerbs() }
+document.addEventListener('visibilitychange',function(){state.hidden=document.hidden; if(state.hidden)stop(); else start()});
+
+function relayout(){ measure(); setupWall(); spine=buildSpine(); conn=conn?(function(){var d=conn.drawn;conn=null;var c=buildConn();if(c)c.drawn=d;return c})():null; scrollWork() }
+var rt=0; function schedule(){clearTimeout(rt);rt=setTimeout(relayout,120)}
+addEventListener('scroll',onScroll,{passive:true});
+addEventListener('resize',schedule);
+if(window.ResizeObserver){var ro=new ResizeObserver(schedule);ro.observe(root)}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+mq.addEventListener&&mq.addEventListener('change',function(){reduced=mq.matches;html.classList.toggle('rm',reduced);if(reduced){showAll();stopVerbs()}schedule()});
+
+/* ---------- 12. small things ---------- */
+var cp=$('[data-copy]'); if(cp)cp.addEventListener('click',function(){var l=$('[data-copy-l]',cp),t=l.textContent;function done(){l.textContent='Copied';setTimeout(function(){l.textContent=t},1600)}
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(done,done);else done()});
+var bt=$('[data-btt]'); if(bt)bt.addEventListener('click',function(){scrollTo({top:0,behavior:reduced?'auto':'smooth'})});
+
+/* ---------- boot ---------- */
+measure(); setupReveals(); setupWall(); if(reduced)spine=buildSpine(); scrollWork(); start(); loader();
+})();
+
+</script>
+</body></html>

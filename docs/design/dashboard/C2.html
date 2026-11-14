@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TendAI Custody · Dashboard C2</title>
+<meta name="description" content="Dashboard mockup C2. Fictional example data. Designed around HIPAA principles.">
+<style>
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Plex Sans";src:url("fonts/ibm-plex-sans-latin-700-normal.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Plex Mono";src:url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Plex Mono";src:url("fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Plex Mono";src:url("fonts/ibm-plex-mono-latin-600-normal.woff2") format("woff2");font-weight:600;font-display:swap}
+
+/* ===== TOKENS (these map 1:1 to the build's globals.css) ===== */
+:root{
+  /* surfaces: navy-tinted neutrals, no default slate ramp */
+  --ink:#0F172A; --navy:#1A2744; --navy-2:#22315A; --canvas:#F4F6F8; --paper:#FFFFFF; --sunk:#EBEEF3;
+  --mut:#4A556B; --faint:#626C80; --line:#C9D0DB; --hair:#DFE4EB;
+  /* signal + status */
+  --sig:#00C08B; --sig-t:#007F5C; --mint:#5EEAD4;
+  --red:#C4261D; --red-t:#FCE9E7; --red-d:#8F1B14;
+  /* role hues (same four as the landing diagram) */
+  --h-clinic:#0D9488; --h-hosp:#3B82F6; --h-2nd:#7C3AED; --h-app:#F59E0B;
+  --h-hosp-t:#1D4ED8; --h-2nd-t:#6D28D9; --h-app-t:#B45309;
+  --sans:"Plex Sans","Helvetica Neue",Arial,sans-serif; --mono:"Plex Mono",ui-monospace,Menlo,monospace;
+  /* shape: square-ish, one radius per role */
+  --r-panel:2px; --r-ctl:4px; --r-tag:2px;
+  --top:44px; --foot:32px; --rail:232px; --pad:40px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font:400 15px/1.55 var(--sans);letter-spacing:-.011em;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--sig);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.mono{font-family:var(--mono);letter-spacing:0}
+
+/* ===== TOP STRIP + FOOT STRIP (navy brackets, mono) ===== */
+.top{position:fixed;inset:0 0 auto 0;height:var(--top);z-index:50;background:var(--navy);color:#F4F6F8;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:-.02em}
+.mk{width:24px;height:24px;border-radius:3px;background:var(--h-clinic);color:#fff;display:grid;place-items:center;font:600 10px/1 var(--mono);letter-spacing:0}
+.status{display:flex;align-items:center;gap:20px;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#A9B6CC}
+.status b{font-weight:500;color:var(--mint)}
+.status .dot{display:inline-block;width:7px;height:7px;background:var(--sig);margin-right:8px;vertical-align:0;animation:blink 2.4s steps(1) infinite}
+@keyframes blink{50%{opacity:.35}}
+.go{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 12px;border:1px solid rgba(244,246,248,.4);border-radius:3px;font:500 12.5px/1 var(--sans);color:#F4F6F8;background:transparent}
+.go svg{width:12px;height:12px;stroke:var(--sig);fill:none;stroke-width:2;stroke-linecap:square}
+.go:hover{background:rgba(244,246,248,.08)}
+.foot{position:fixed;inset:auto 0 0 0;height:var(--foot);z-index:50;background:var(--navy);color:#A9B6CC;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font:400 10.5px/1 var(--mono);letter-spacing:.02em}
+.foot b{font-weight:500;color:var(--mint)}
+
+/* ===== RAIL: numbered index, no icons ===== */
+.rail{position:fixed;top:var(--top);bottom:var(--foot);left:0;width:var(--rail);z-index:30;border-right:1px solid var(--line);background:var(--canvas);display:flex;flex-direction:column}
+.rail h6{margin:0;padding:22px 24px 8px;font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.ri{position:relative;display:grid;grid-template-columns:24px 10px 1fr auto;align-items:center;column-gap:10px;height:42px;padding:0 24px;border-top:1px solid var(--hair);font:500 14.5px/1 var(--sans);color:var(--mut)}
+.ri:last-of-type{border-bottom:1px solid var(--hair)}
+.ri .n{font:500 11px/1 var(--mono);color:var(--faint)}
+.ri .sw{width:8px;height:8px;background:var(--c,var(--ink))}
+.ri .st{font:500 10px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.ri:hover{background:var(--paper);color:var(--ink)}
+.ri.on{background:var(--paper);color:var(--ink);font-weight:600}
+.ri.on::before{content:"";position:absolute;left:0;top:-1px;bottom:-1px;width:4px;background:var(--sig)}
+.ri.on .n{color:var(--ink)}
+.ri .st.ok{color:var(--sig-t)} .ri .st.bad{color:var(--red)}
+.rail .case{margin-top:auto;padding:16px 24px 20px;border-top:1px solid var(--line);font:400 11.5px/1.55 var(--mono);color:var(--faint);letter-spacing:0}
+.rail .case b{display:block;font:600 13px/1.3 var(--sans);color:var(--ink);letter-spacing:-.01em;margin-bottom:4px}
+.rail .case button{margin-top:10px;padding:0;border:0;background:none;font:500 11px/1 var(--mono);color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--sig);text-decoration-thickness:2px}
+
+/* ===== STAGE + 12 col grid ===== */
+.stage{margin:var(--top) 0 var(--foot) var(--rail);padding:0 var(--pad) 24px;min-height:calc(100vh - var(--top) - var(--foot))}
+.g12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:20px}
+[data-screen]{display:none}
+[data-screen].on{display:block}
+
+/* page head: giant H1 left, relay map right */
+.ph{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:20px;padding:30px 0 24px;border-bottom:1px solid var(--ink);position:relative}
+.ph::after{content:"";position:absolute;left:0;bottom:-1px;height:3px;width:72px;background:var(--sig);transform-origin:0 50%}
+.ph-l{grid-column:1/span 8}
+.ph-r{grid-column:9/span 4;align-self:end;justify-self:end}
+.eyebrow{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.eyebrow b{font-weight:600;color:var(--ink)}
+.eyebrow i{width:18px;height:1px;background:var(--mut)}
+h1{margin:16px 0 0;font:600 54px/.98 var(--sans);letter-spacing:-.035em;color:var(--ink)}
+h1 .ln{display:block;overflow:hidden;padding-bottom:.08em}
+h1 .ln>span{display:block}
+.mark{background:var(--sig);color:var(--ink);padding:0 .12em;margin:0 -.04em;border-radius:2px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.mark.red{background:var(--red);color:#fff}
+.lede{text-wrap:pretty;margin:14px 0 0;max-width:60ch;font-size:16px;line-height:1.5;color:var(--mut)}
+.relay{display:block;width:384px}.relay svg{width:384px;height:auto;display:block}
+.relay .cap{margin-top:6px;font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:right}
+
+/* section: hairline rule + mono index, not a card */
+.sec{margin-top:26px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-top:10px;border-top:1px solid var(--ink)}
+.sec-h .t{display:flex;gap:10px;align-items:baseline;font:600 11px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.sec-h .t em{font-style:normal;font-weight:500;color:var(--faint)}
+.sec-h .r{font:400 11.5px/1 var(--mono);color:var(--faint)}
+.sec-b{padding-top:14px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-panel)}
+.panel.ink{border-color:var(--ink)}
+.navy{background:var(--navy);color:#F4F6F8;border-radius:var(--r-panel);position:relative;background-image:radial-gradient(rgba(244,246,248,.07) 1px,transparent 1px);background-size:14px 14px}
+.navy .lab{font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#A9B6CC}
+.mutp{color:var(--mut)}
+.small{font-size:13.5px;line-height:1.5}
+
+/* tags: flat, no stroke */
+.tag{display:inline-flex;align-items:center;gap:6px;height:20px;padding:0 7px;border-radius:var(--r-tag);background:var(--sunk);color:var(--mut);font:600 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.tag::before{content:"";width:6px;height:6px;background:currentColor}
+.tag.ok{background:var(--sig);color:var(--ink)}
+.tag.ok::before{background:var(--ink)}
+.tag.bad{background:var(--red);color:#fff}
+.tag.bad::before{background:#fff}
+.tag.soft-bad{background:var(--red-t);color:var(--red-d)}
+.tag.plain::before{display:none}
+.tag.on-navy{background:rgba(94,234,212,.14);color:var(--mint)}
+.tag.hosp{background:#E3EDFE;color:var(--h-hosp-t)} .tag.sec2{background:#EEE7FD;color:var(--h-2nd-t)} .tag.app{background:#FDEFD3;color:var(--h-app-t)} .tag.cl{background:#D8F2EE;color:#0B6B62}
+.tag.ni::before{display:none}
+.tag.q{background:none;padding:0;height:auto;color:var(--sig-t)}
+.tag.q::before{background:var(--sig)}
+.tag.q.bad{color:var(--red)} .tag.q.bad::before{background:var(--red)}
+.tag.q.mut{color:var(--faint)} .tag.q.mut::before{background:var(--line)}
+.ev .tag{background:none;padding:0;height:auto;color:var(--ct,var(--mut))}
+.ev .tag::before{display:block;background:var(--c,currentColor)}
+.ev .tag.ni::before{display:block}
+.ev .tag,.nrow .tag,.chk .tag{margin-top:4px}
+
+/* buttons: rectangles, ink, signal arrow */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;height:46px;padding:0 20px;border:1px solid var(--ink);border-radius:var(--r-ctl);background:var(--ink);color:#F4F6F8;font:500 15px/1 var(--sans);letter-spacing:-.005em;transition:transform .2s var(--ease),background .2s}
+.btn svg{width:14px;height:14px;stroke:var(--sig);fill:none;stroke-width:2.2;stroke-linecap:square;transition:transform .25s var(--ease)}
+.btn:hover svg{transform:translateX(3px)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.ghost svg{stroke:var(--ink)}
+.btn.danger{background:transparent;color:var(--red);border-color:var(--red)}
+.btn.danger svg{stroke:var(--red)}
+.btn.sm{height:38px;padding:0 14px;font-size:14px}
+.btn.sig{background:var(--sig);border-color:var(--sig);color:var(--ink)}
+.btn.sig svg{stroke:var(--ink)}
+.btn.redsolid{background:var(--red);border-color:var(--red);color:#fff}
+.btn.redsolid svg{stroke:#fff}
+.btn[disabled]{background:var(--sunk);border-color:var(--line);color:var(--faint);pointer-events:none}
+.btn[disabled] svg{stroke:var(--faint)}
+.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+
+/* square toggles */
+.sel{display:flex;flex-wrap:wrap;gap:8px}
+.sel button{display:inline-flex;align-items:center;gap:10px;height:38px;padding:0 14px 0 10px;border:1px solid var(--ink);border-radius:var(--r-ctl);background:var(--paper);color:var(--ink);font:500 14.5px/1 var(--sans)}
+.sel button .bx{width:16px;height:16px;border:1px solid var(--ink);display:grid;place-items:center;border-radius:2px;background:#fff}
+.sel button .bx svg{width:10px;height:10px;stroke:var(--ink);fill:none;stroke-width:2.6;stroke-linecap:square;opacity:0}
+.sel button.on{background:var(--ink);color:#F4F6F8}
+.sel button.on .bx{background:var(--sig);border-color:var(--sig)}
+.sel button.on .bx svg{opacity:1}
+.sel button.out{border-color:var(--line);color:var(--faint);background:repeating-linear-gradient(135deg,transparent 0 5px,rgba(15,23,42,.06) 5px 6px)}
+.sel button.out span.t{text-decoration:line-through}
+.sel button.out .bx{border-color:var(--line)}
+.seg{display:inline-flex;border:1px solid var(--ink);border-radius:var(--r-ctl);overflow:hidden}
+.seg button{height:36px;padding:0 16px;border:0;border-right:1px solid var(--ink);background:var(--paper);font:500 14px/1 var(--sans)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ink);color:#F4F6F8}
+.seg.mono button{font:500 11.5px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;height:32px;padding:0 12px}
+
+/* key-value mono */
+.kv{display:grid;grid-template-columns:132px minmax(0,1fr);margin:0}
+.kv dt,.kv dd{margin:0;padding:9px 0;border-top:1px solid rgba(244,246,248,.14)}
+.kv dt{font:500 10.5px/1.5 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#A9B6CC;padding-top:11px}
+.kv dd{font:400 12.5px/1.5 var(--mono);color:#F4F6F8;overflow-wrap:anywhere}
+.kv dd .g{color:var(--mint)}
+.kv.light dt,.kv.light dd{border-top:1px solid var(--hair)}
+.kv.light dt{color:var(--faint)} .kv.light dd{color:var(--ink)}
+
+/* ruled table */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;padding:0 0 8px;font:500 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.tbl td{padding:11px 0;border-top:1px solid var(--hair);font-size:14.5px;vertical-align:middle}
+.tbl td.m{font:400 12.5px/1.4 var(--mono);color:var(--mut)}
+.tbl .nm{font-weight:600}
+
+/* checks (verification) */
+.chk{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:14px;align-items:start;padding:13px 0;border-top:1px solid var(--hair)}
+.chk .n{font:500 11px/22px var(--mono);color:var(--faint)}
+.chk b{display:block;font-size:15px;font-weight:600;letter-spacing:-.012em}
+.chk p{margin:2px 0 0;font-size:13.5px;line-height:1.45;color:var(--mut)}
+.chk.fail{background:linear-gradient(90deg,var(--red-t),transparent 70%);margin:0 -12px;padding-left:12px;padding-right:12px}
+.chk.fail b{color:var(--red-d)}
+.chk.fail .n{color:var(--red)}
+
+/* ---- specific screens ---- */
+.cols{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);column-gap:20px}
+.cols.eq{grid-template-columns:1fr 1fr}.dflex>div{display:flex;flex-direction:column}
+.sentbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 18px;background:var(--navy);color:#F4F6F8;border-radius:var(--r-panel)}
+.sentbar .big{font:600 22px/1 var(--sans);letter-spacing:-.025em}
+.nrow{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:12px;padding:12px 0;border-top:1px solid var(--hair);align-items:start}
+.nrow .n{font:500 11px/22px var(--mono);color:var(--faint)}
+.nrow b{display:block;font-weight:600;letter-spacing:-.012em}
+.nrow p{margin:2px 0 0;font-size:13.5px;line-height:1.45;color:var(--mut)}
+.sens{border-left:3px solid var(--ink);padding-left:12px;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(15,23,42,.045) 6px 7px)}
+
+.summary{padding:22px 24px 0}
+.summary .txt{margin:12px 0 0;font:400 19px/1.55 var(--sans);letter-spacing:-.014em;color:#F4F6F8;max-width:62ch}
+.summary .bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:20px -24px 0;padding:12px 24px;border-top:1px solid rgba(244,246,248,.16);font:400 12px/1.4 var(--mono);color:#A9B6CC}
+.summary .bar b{font-weight:500;color:#F4F6F8}
+
+.latency{font:600 112px/.9 var(--sans);letter-spacing:-.05em;color:var(--ink)}
+.latency small{font:600 36px/1 var(--sans);letter-spacing:-.03em;color:var(--mut);margin-left:4px}
+.ruler{position:relative;height:22px;margin-top:14px;border-bottom:1px solid var(--ink);background:repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 12.5%);background-size:100% 8px;background-repeat:no-repeat;background-position:0 100%}
+.ruler i{position:absolute;bottom:0;left:0;height:8px;width:35%;background:var(--sig)}
+.ruler span{position:absolute;top:0;font:500 10px/1 var(--mono);color:var(--faint)}
+
+.tiles{display:grid;grid-template-columns:1fr 1fr;column-gap:20px}
+.tiles .sec{margin-top:20px}
+.tiles p{margin:0;font-size:15px;line-height:1.55}
+
+.ba{padding:18px 20px;flex:1;font-size:15px;line-height:1.75}
+.rd{white-space:nowrap;background:var(--ink);color:#fff;padding:0 .2em;border-radius:1px;position:relative;margin:0 1px}
+.rd i{font:600 9px/1 var(--mono);font-style:normal;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-left:7px;vertical-align:2px}
+.tok{font:500 12.5px/1 var(--mono);background:#FDEFD3;color:var(--h-app-t);padding:2px 5px;border-radius:2px}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:0;position:relative;padding-top:6px}
+.flow::before{content:"";position:absolute;left:12px;right:12%;top:18px;height:2px;background:var(--ink)}
+.flow .st{position:relative;padding-right:18px}
+.flow .nd{display:block;width:24px;height:24px;border-radius:50%;border:3px solid var(--c);background:var(--paper);position:relative;z-index:1}
+.flow .nd.fill{background:var(--c)}
+.flow b{display:block;margin-top:10px;font:600 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.flow p{margin:4px 0 0;font-size:13.5px;line-height:1.45;color:var(--mut)}
+.leak{display:flex;align-items:center;gap:14px;padding:12px 16px;border:1px solid var(--ink);border-radius:var(--r-panel);background:var(--paper)}
+
+.log{position:relative;padding-left:0}
+.ev{display:grid;grid-template-columns:132px 28px minmax(0,1fr) auto;column-gap:12px;align-items:start;padding:9px 0;position:relative}
+.ev .when{font:400 11.5px/1.45 var(--mono);color:var(--mut)}
+.ev .when b{display:block;font-weight:600;color:var(--ink);font-size:12.5px}
+.ev .node{position:relative;z-index:1;width:14px;height:14px;margin:3px 0 0 7px;border-radius:50%;border:3px solid var(--c,var(--ink));background:var(--paper)}
+.ev h3{margin:0;font:600 15.5px/1.3 var(--sans);letter-spacing:-.016em}
+.ev p{margin:2px 0 0;font-size:13.5px;line-height:1.45;color:var(--mut)}
+.ev .px{font:400 11px/1.4 var(--mono);color:var(--faint);margin-top:3px}
+.ev .px a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--sig);text-decoration-thickness:2px;text-underline-offset:3px}
+.spine{position:absolute;left:146px;top:22px;bottom:30px;width:4px;background:var(--sig);border-radius:2px;transform-origin:0 0}
+.spine.red{background:linear-gradient(var(--sig),var(--sig) 88%,var(--red) 88%)}
+
+.hold{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,3.6fr) 70px 110px 130px 112px;column-gap:16px;align-items:center;padding:14px 0 14px 14px;border-top:1px solid var(--hair);position:relative}
+.hold .who b{display:block;font:600 15.5px/1.3 var(--sans);letter-spacing:-.014em}
+.hold .who span{font:400 11.5px/1.3 var(--mono);color:var(--faint)}
+.hold .scope{font:400 12px/1.5 var(--mono);color:var(--mut)}
+.hold .m{font:400 12px/1.4 var(--mono);color:var(--mut)}
+.hold::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:4px;background:var(--c)}
+.hold.rev{background:linear-gradient(90deg,var(--red-t),rgba(252,233,231,0) 80%)}
+.hold.rev::before{background:var(--red)}
+.hold.rev .scope{text-decoration:line-through;text-decoration-color:var(--red)}
+.hh{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,3.6fr) 70px 110px 130px 112px;column-gap:16px;padding:0 0 8px 14px;font:500 10.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.term{padding:16px 18px;font:400 12.5px/1.8 var(--mono);color:#D5DDEA}
+.term .ok{color:var(--mint)} .term .no{color:#FF8A80} .term .dim{color:#8FA0BC}
+
+.tamper-band{background:var(--red);color:#fff;border-radius:var(--r-panel);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.tamper-band b{font:600 20px/1.15 var(--sans);letter-spacing:-.02em}
+.hx{font:400 12.5px/1.7 var(--mono);word-break:break-all}
+.hx u{text-decoration:none;color:var(--red);font-weight:600;background:var(--red-t)}
+
+/* motion: understated, transform-only */
+.js .on .ln>span{animation:rise .85s var(--ease) both;animation-delay:calc(var(--i,0)*90ms)}
+@keyframes rise{from{transform:translateY(108%)}to{transform:none}}
+.js [data-screen]:not(.on) .ph::after{transform:scaleX(0)}
+.js .on .ph::after{transform:scaleX(1);transition:transform .9s var(--ease) .25s}
+.js .on .rv{animation:rv .7s var(--ease) both;animation-delay:calc(var(--d,0)*70ms + 160ms)}
+@keyframes rv{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.js .on .spine{animation:grow 1.3s var(--ease) .3s both}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.relay .ln-draw{stroke-dasharray:var(--len,300);stroke-dashoffset:var(--len,300)}
+.js .on .relay .ln-draw{animation:draw 1s var(--ease) .35s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.relay .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.js .on .ln>span,.js .on .rv,.relay .pulse{animation:none}.relay .ln-draw{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+
+<div class="top">
+  <div class="brand"><span class="mk">TC</span>TendAI Custody</div>
+  <div class="status"><span><span class="dot"></span>Near testnet</span><b>rr6c9910d7.testnet</b><span>Fictional data</span><span>Demo key</span></div>
+  <a class="go" href="#clinic">Guided demo <svg viewBox="0 0 14 14"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+</div>
+
+<nav class="rail" aria-label="Workspace">
+  <h6>Actors</h6>
+  <a class="ri" data-nav="clinic" href="#clinic" style="--c:var(--h-clinic)"><span class="n">01</span><i class="sw"></i><span>Clinic A</span><span class="st" data-st="clinic">Sent</span></a>
+  <a class="ri" data-nav="consent" href="#consent" style="--c:var(--ink)"><span class="n">02</span><i class="sw"></i><span>Maya</span><span class="st" data-st="patient">Pending</span></a>
+  <a class="ri" data-nav="hospital" href="#hospital" style="--c:var(--h-hosp);--ct:var(--h-hosp-t)"><span class="n">03</span><i class="sw"></i><span>Hospital B</span><span class="st" data-st="hospital">Waiting</span></a>
+  <a class="ri" data-nav="reyes" href="#timeline" style="--c:var(--h-2nd)"><span class="n">04</span><i class="sw"></i><span>Dr. Reyes</span><span class="st" data-st="reyes">Idle</span></a>
+  <a class="ri" data-nav="deid" href="#deid" style="--c:var(--h-app)"><span class="n">05</span><i class="sw"></i><span>PulseFit</span><span class="st" data-st="app">Idle</span></a>
+  <h6>Proof</h6>
+  <a class="ri" data-nav="timeline" href="#timeline" style="--c:var(--sig)"><span class="n">06</span><i class="sw"></i><span>Custody</span><span class="st">On NEAR</span></a>
+  <a class="ri" data-nav="verify" href="#verify" style="--c:var(--sig)"><span class="n">07</span><i class="sw"></i><span>Verification</span><span class="st" data-st="verify">Ready</span></a>
+  <a class="ri" data-nav="revoked" href="#revoked" style="--c:var(--red)"><span class="n">08</span><i class="sw"></i><span>Access</span><span class="st" data-st="access">3 holders</span></a>
+  <div class="case"><b>Riverbend Family Clinic</b>Example story on testnet.<br>Case RR-0142<br><button type="button" onclick="go('clinic')">Reset story</button></div>
+</nav>
+
+<main class="stage" id="stage">
+
+<!-- ============ 01 CLINIC SENT ============ -->
+<section data-screen="clinic" data-map="clinic">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>01</b><i></i>Clinic A · Referral</div>
+      <h1><span class="ln"><span style="--i:0">Send Maya’s <mark class="mark">referral</mark></span></span></h1>
+      <p class="lede rv">Heart records to St. Aster General. Only hashes are written to NEAR. Maya approves before the hospital can open the chart.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="sec rv" style="--d:1">
+    <div class="sentbar">
+      <div><div class="lab mono" style="font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#A9B6CC;margin-bottom:8px">Status</div><div class="big">Sent 09:16 · waiting for Maya</div></div>
+      <div class="mono" style="font-size:12px;color:#A9B6CC;text-align:right">Proof on NEAR testnet<br><span style="color:var(--mint)">38hWT7an…VUn7tad ↗</span></div>
+    </div>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="sec rv" style="--d:2">
+        <div class="sec-h"><span class="t">A <em>Shared sections</em></span><span class="r">5 of 6 will be offered</span></div>
+        <div class="sec-b" style="padding-top:2px">
+          <div class="nrow"><span class="n">01</span><div><b>Referred for stress testing and cardiology evaluation.</b></div><span class="tag q">Included</span></div>
+          <div class="nrow sens"><span class="n">02</span><div><b>2021 counseling note</b><p>Sensitive. Cardiology does not need it. Maya can leave this out.</p></div><span class="tag ni" style="background:var(--ink);color:#fff">Sensitive</span></div>
+        </div>
+      </div>
+      <div class="sec rv" style="--d:3">
+        <div class="sec-h"><span class="t">B <em>Purpose</em></span><span class="r">Maya reads this on her phone</span></div>
+        <div class="sec-b"><div class="panel" style="padding:12px 14px;font-size:15.5px">Fictional referral</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec rv" style="--d:3">
+        <div class="sec-h"><span class="t">C <em>Next</em></span><span class="r">3</span></div>
+        <div class="sec-b" style="padding-top:2px">
+          <div class="nrow"><span class="n">01</span><div><b>Send Maya’s referral</b><p>Hashes only on NEAR.</p></div><span class="tag q">Sent</span></div>
+          <div class="nrow"><span class="n">02</span><div><b>Sign yesterday’s notes</b><p>Example task. Not part of this story.</p></div></div>
+          <div class="nrow"><span class="n">03</span><div><b>Staff key</b><p>Would sign for staff. It cannot consent for Maya.</p></div><span class="tag q mut">Later</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sec rv" style="--d:4">
+    <div class="sec-h"><span class="t">D <em>Patients</em></span><span class="r">Maya’s chart stays on this device until she approves</span></div>
+    <div class="sec-b">
+      <table class="tbl"><tbody>
+        <tr><td class="nm" style="width:30%">Maya</td><td class="m">Fictional record</td><td class="m">Fictional referral</td><td style="text-align:right"><span class="tag q">Sent</span></td></tr>
+        <tr><td>Example 014</td><td class="m">MRN example</td><td class="m">Follow-up</td><td></td></tr>
+        <tr><td>Example 027</td><td class="m">MRN example</td><td class="m">Transfer</td><td></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 CONSENT ============ -->
+<section data-screen="consent" data-map="consent">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>02</b><i></i>Maya · Consent</div>
+      <h1><span class="ln"><span style="--i:0">Cardiology <mark class="mark">referral</mark></span></span></h1>
+      <p class="lede rv">This referral is fictional. Leave out any section the hospital does not need.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="cols">
+    <div>
+      <div class="sec rv" style="--d:1">
+        <div class="sec-h"><span class="t">A <em>Include</em></span><span class="r">5 of 6</span></div>
+        <div class="sec-b sel" id="sections">
+          <button class="on"><span class="bx"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-6"/></svg></span>History</button>
+          <button class="on"><span class="bx"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-6"/></svg></span>Medications</button>
+          <button class="on"><span class="bx"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-6"/></svg></span>Labs</button>
+          <button class="on"><span class="bx"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-6"/></svg></span>Imaging</button>
+          <button class="on"><span class="bx"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-6"/></svg></span>Notes</button>
+          <button class="out"><span class="bx"><svg viewBox="0 0 10 10"><path d="M1 5l3 3 5-6"/></svg></span><span class="t">Counseling</span></button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec rv" style="--d:2">
+        <div class="sec-h"><span class="t">B <em>Expires</em></span><span class="r">Through Day 30</span></div>
+        <div class="sec-b"><div class="seg"><button>7 days</button><button class="on">30 days</button><button>90 days</button></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec rv" style="--d:3">
+    <div class="sec-h"><span class="t">C <em>Summary, made inside a NEAR AI Cloud TEE</em></span><span class="r">Maya reads this before she approves</span></div>
+    <div class="sec-b">
+      <div class="navy summary">
+        <div class="row" style="justify-content:space-between"><span class="lab">Summary</span><span class="tag ok">Verified</span></div>
+        <p class="txt">This panel is a fictional referral note. It does not include a measurement or a personal identifier.</p>
+        <div class="bar"><span>Signature <b>provider_tee</b></span><span>Model <b>z-ai/glm-5.3-flash</b></span><span>Round trip <b>2.8 s</b></span><span>Signer <b>5a0210f2…52b7e8caff</b></span><a href="#verify" style="margin-left:auto;color:var(--mint);text-decoration:underline;text-underline-offset:3px">See all checks</a></div>
+      </div>
+    </div>
+  </div>
+  <div class="row rv" style="--d:4;margin-top:22px">
+    <button class="btn" type="button">Approve and share <svg viewBox="0 0 14 14"><path d="M1 7h11M8 3l4 4-4 4"/></svg></button>
+    <button class="btn danger" type="button">Deny</button>
+    <span class="mono small" style="color:var(--faint);font-size:11.5px">Approve stays off unless the signature is provider_tee.</span>
+  </div>
+</section>
+
+<!-- ============ 03 VERIFICATION ============ -->
+<section data-screen="verify" data-map="consent">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>07</b><i></i>Verification center</div>
+      <h1><span class="ln"><span style="--i:0">Attestation <mark class="mark">checks</mark></span></span></h1>
+      <p class="lede rv">The panel is green only when the signature kind is provider_tee. Approve stays off otherwise.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="cols" style="margin-top:26px;column-gap:28px">
+    <div>
+      <div class="navy" style="padding:20px 24px 12px">
+        <div class="row" style="justify-content:space-between;margin-bottom:12px"><span class="lab">Attestation fields</span><span class="tag ok">provider_tee</span></div>
+        <dl class="kv">
+          <dt>Model</dt><dd>z-ai/glm-5.3-flash</dd>
+          <dt>Signature</dt><dd><span class="g">provider_tee</span></dd>
+          <dt>Signer</dt><dd>5a0210f2442c79355784f9de021985429561da5bacc3a4424b01ac52b7e8caff</dd>
+          <dt>Request hash</dt><dd>92cedfab45a24322f6c5c1ae18c490a50817f7c087a145a127f3d07c51eae4ae</dd>
+          <dt>Response hash</dt><dd>2504553b5271f054ab44a9632c71769f223706450aeeef64f5f22ac62bf34fed</dd>
+          <dt>On-chain tx</dt><dd>AqBmwYXHr1uyJqurJmaC5w37HzYb4d3cY3WMn95UUAXt</dd>
+        </dl>
+      </div>
+      <div class="row" style="margin-top:16px"><button class="btn sm ghost" type="button">Inspect attestation</button><a class="btn sm danger" href="#tamper">Tamper: flip one envelope byte</a></div>
+    </div>
+    <div>
+      <div class="lab mono" style="font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)">Summary round trip · measured</div>
+      <div class="latency" style="margin-top:12px">2.8<small>s</small></div>
+      <div class="ruler"><i></i><span style="left:0">0</span><span style="left:50%">4</span><span style="right:0">8 s</span></div>
+      <div class="sec" style="margin-top:20px">
+        <div class="sec-h"><span class="t">Checks <em>1 to 4</em></span><span class="r">Run as one bundle</span></div>
+        <div class="sec-b" style="padding-top:0">
+          <div class="chk"><span class="n">01</span><div><b>Fresh client nonce</b><p>32 random bytes, 64 hex characters.</p></div><span class="tag q">Pass</span></div>
+          <div class="chk"><span class="n">02</span><div><b>Gateway Intel quote</b><p>DCAP verifier accepted it. TCB status: UpToDate.</p></div><span class="tag q">Pass</span></div>
+          <div class="chk"><span class="n">03</span><div><b>Nonce bound to report</b><p>Report data binds the nonce and the signing address.</p></div><span class="tag q">Pass</span></div>
+          <div class="chk"><span class="n">04</span><div><b>Signature kind is provider_tee</b><p>The gateway signed this response.</p></div><span class="tag q">Pass</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 HOSPITAL ============ -->
+<section data-screen="hospital" data-map="hospital">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>03</b><i></i>Hospital B · St. Aster General</div>
+      <h1><span class="ln"><span style="--i:0">Maya’s <mark class="mark">referral</mark></span></span></h1>
+      <p class="lede rv">Opened after Maya approved. The open is logged on NEAR before the chart appears.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="sec rv" style="--d:1">
+    <div class="sentbar" style="background:var(--navy)">
+      <div><div style="font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#A9B6CC;margin-bottom:8px">Verified summary</div><div style="font:400 17px/1.5 var(--sans);max-width:92ch">This panel is a fictional referral note. It does not include a measurement or a personal identifier.</div></div>
+      <div style="text-align:right;flex:none"><span class="tag ok">Open logged 10:42</span><div class="mono" style="font-size:11px;color:#A9B6CC;margin-top:8px">before chart</div></div>
+    </div>
+  </div>
+  <div class="tiles">
+    <div class="sec rv" style="--d:2"><div class="sec-h"><span class="t">01 <em>History</em></span></div><div class="sec-b"><p>This section is a fictional note. It does not name a measurement.</p></div></div>
+    <div class="sec rv" style="--d:2"><div class="sec-h"><span class="t">02 <em>Medications</em></span></div><div class="sec-b"><p>This section is a fictional note. It does not name a medicine.</p></div></div>
+    <div class="sec rv" style="--d:3"><div class="sec-h"><span class="t">03 <em>Labs</em></span></div><div class="sec-b"><p>This section is a fictional note. It does not list a lab value.</p></div></div>
+    <div class="sec rv" style="--d:3"><div class="sec-h"><span class="t">04 <em>Imaging</em></span></div><div class="sec-b"><p>This section is a fictional note. It does not describe a scan.</p></div></div>
+  </div>
+  <div class="cols" style="margin-top:6px">
+    <div class="sec rv" style="--d:4">
+      <div class="sec-h"><span class="t">05 <em>Reply to Maya</em></span><span class="r">Riverbend does not see this unless Maya forwards it</span></div>
+      <div class="sec-b"><div class="panel" style="padding:14px 16px;font-size:15.5px;line-height:1.55">This reply is a fictional note. It does not recommend a medicine.</div></div>
+    </div>
+    <div class="sec rv" style="--d:4">
+      <div class="sec-h"><span class="t">06 <em>Tasks</em></span></div>
+      <div class="sec-b" style="padding-top:2px">
+        <div class="nrow"><span class="n">01</span><div><b>Send consult note</b><p>Recorded on NEAR.</p></div><span class="tag q">Done</span></div>
+        <div class="nrow"><span class="n">02</span><div><b>Call the lab</b><p>Example task.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 DE-ID ============ -->
+<section data-screen="deid" data-map="deid">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>05</b><i></i>PulseFit · De-identify</div>
+      <h1><span class="ln"><span style="--i:0">Before and <mark class="mark">after</mark></span></span></h1>
+      <p class="lede rv">Removes common identifiers, best effort, with a preview. Absolute dates become Day 0 and Day +14.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="cols eq dflex" style="margin-top:26px">
+    <div class="rv" style="--d:1">
+      <div class="sec-h" style="margin-bottom:12px"><span class="t">A <em>Before</em></span><span class="r">What Maya’s chart says</span></div>
+      <div class="panel ba"><span class="rd">Fictional name<i>name</i></span> <span class="rd">Fictional date<i>dob</i></span> <span class="rd">Fictional record<i>mrn</i></span> <span class="rd">Fictional street<i>address</i></span> <span class="rd">Fictional phone<i>phone</i></span> <span class="rd">Fictional id<i>insurer id</i></span>. The rest of this note is also fictional.</div>
+    </div>
+    <div class="rv" style="--d:2">
+      <div class="sec-h" style="margin-bottom:12px"><span class="t">B <em>After</em></span><span class="r"><span class="tag app ni">De-identified</span></span></div>
+      <div class="panel ba ink"><span class="tok">NAME</span> <span class="tok">DOB</span> <span class="tok">MRN</span> <span class="tok">ADDRESS</span> <span class="tok">PHONE</span> <span class="tok">INSURER</span> removed. The remaining sentence is still a fictional note.</div>
+    </div>
+  </div>
+  <div class="sec rv" style="--d:3">
+    <div class="sec-h"><span class="t">C <em>What left the device</em></span><span class="r">Removed: name, DOB, MRN, address, phone, insurer id, calendar date</span></div>
+    <div class="sec-b flow">
+      <div class="st" style="--c:var(--ink)"><span class="nd fill"></span><b>1 · This device</b><p>Plaintext and the private key stay here.</p></div>
+      <div class="st" style="--c:var(--h-clinic)"><span class="nd"></span><b>2 · E2EE</b><p>The request is encrypted to the attested model key.</p></div>
+      <div class="st" style="--c:var(--h-2nd)"><span class="nd"></span><b>3 · Attested model</b><p>z-ai/glm-5.3-flash in a NEAR AI Cloud TEE.</p></div>
+      <div class="st" style="--c:var(--sig)"><span class="nd fill"></span><b>4 · NEAR testnet</b><p>Hashes, scope, expiry and custody events only.</p></div>
+    </div>
+  </div>
+  <div class="row rv" style="--d:4;margin-top:20px">
+    <div class="leak"><span class="tag ok">Leak scan clear</span><span class="small">No planted identifier remains. Best effort, with this preview.</span></div>
+    <button class="btn" type="button">Send to PulseFit <svg viewBox="0 0 14 14"><path d="M1 7h11M8 3l4 4-4 4"/></svg></button>
+  </div>
+</section>
+
+<!-- ============ 06 TIMELINE ============ -->
+<section data-screen="timeline" data-map="timeline">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>06</b><i></i>Custody log · On NEAR</div>
+      <h1><span class="ln"><span style="--i:0">What <mark class="mark">moved</mark></span></span></h1>
+      <p class="lede rv">Read from the contract. What was shared, when, with whom. Times are Bangkok.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="row rv" style="--d:1;margin:20px 0 6px;justify-content:space-between">
+    <div class="seg mono"><button class="on">All</button><button>Riverbend chart</button><button>St. Aster consult</button><button>PulseFit copy</button></div>
+    <span class="mono" style="font-size:11.5px;color:var(--faint)">Contract rr6c9910d7.testnet · 8 events</span>
+  </div>
+  <div class="log" style="position:relative">
+    <div class="spine red"></div>
+    <article class="ev rv" style="--d:1;--c:var(--h-clinic)"><div class="when"><b>09:14</b>Day 0</div><span class="node"></span><div><h3>Chart created</h3><p>Dr. Lena Park · Source record · Riverbend chart</p></div><span class="tag ni plain">Local</span></article>
+    <article class="ev rv" style="--d:2;--c:var(--h-clinic);--ct:#0B6B62"><div class="when"><b>09:16</b>Day 0</div><span class="node"></span><div><h3>Referral sent</h3><p>Dr. Lena Park · History, Medications, Labs, Imaging, Notes</p><div class="px">tx <a href="#">38hWT7anFYbWodx4p1hv…VUn7tad ↗</a></div></div><span class="tag cl ni">Clinic</span></article>
+    <article class="ev rv" style="--d:3;--c:var(--ink)"><div class="when"><b>09:22</b>Day 0</div><span class="node"></span><div><h3>Maya approved</h3><p>Scope held. Expires on Day 30. Signature provider_tee.</p></div><span class="tag ok">provider_tee</span></article>
+    <article class="ev rv" style="--d:4;--c:var(--h-hosp);--ct:var(--h-hosp-t)"><div class="when"><b>10:42</b>Day 0</div><span class="node"></span><div><h3>Hospital opened</h3><p>Dr. Arjun Mehta · St. Aster General · Open logged before the chart appeared.</p></div><span class="tag hosp ni">Open logged</span></article>
+    <article class="ev rv" style="--d:5;--c:var(--h-hosp);--ct:var(--h-hosp-t)"><div class="when"><b>10:55</b>Day 0</div><span class="node"></span><div><h3>Consult reply recorded</h3><p>Dr. Arjun Mehta to Maya · Treadmill stress test this week.</p><div class="px">tx <a href="#">FSJ3ixXJdyR1C6xxc16R…wC6VrBNQ ↗</a></div></div><span class="tag hosp ni">Reply</span></article>
+    <article class="ev rv" style="--d:6;--c:var(--h-2nd);--ct:var(--h-2nd-t)"><div class="when"><b>11:02</b>Day 0</div><span class="node"></span><div><h3>Second opinion shared</h3><p>Fictional name to Dr. Sofia Reyes. Same sections. Same expiry.</p></div><span class="tag sec2 ni">Second opinion</span></article>
+    <article class="ev rv" style="--d:7;--c:var(--h-app);--ct:var(--h-app-t)"><div class="when"><b>11:20</b>Day 0</div><span class="node"></span><div><h3>De-identified copy sent</h3><p>PulseFit · App copy, best effort. No name, MRN, address, phone or calendar date.</p></div><span class="tag app ni">De-identified</span></article>
+    <article class="ev rv" style="--d:8;--c:var(--red);--ct:var(--red)"><div class="when"><b>14:05</b>Day 0</div><span class="node" style="background:var(--red)"></span><div><h3>Access revoked</h3><p>Fictional name revoked St. Aster General. The next open is blocked.</p></div><span class="tag bad" style="background:none;color:var(--red)">Revoked</span></article>
+  </div>
+</section>
+
+<!-- ============ 07 REVOKED ============ -->
+<section data-screen="revoked" data-map="revoked">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>08</b><i></i>Maya · Access</div>
+      <h1><span class="ln"><span style="--i:0">Access revoked.</span></span><span class="ln"><span style="--i:1"><mark class="mark red">Next open blocked.</mark></span></span></h1>
+      <p class="lede rv">One row per holder. Revoking stops the next open. It cannot erase a copy someone already saved.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="sec rv" style="--d:1">
+    <div class="hh"><span>Holder</span><span>Scope</span><span>Granted</span><span>Expires</span><span>Last opened</span><span style="width:112px"></span></div>
+    <div class="hold" style="--c:var(--h-clinic)"><div class="who"><b>Riverbend Family Clinic</b><span>Dr. Lena Park · Source record</span></div><div class="scope">All six sections</div><div class="m">09:14</div><div class="m">No expiry</div><div class="m">Held at the clinic</div><span class="tag ni" style="width:112px">Source</span></div>
+    <div class="hold rev"><div class="who"><b>St. Aster General</b><span>Dr. Arjun Mehta · Referral</span></div><div class="scope">History, Meds, Labs, Imaging, Notes</div><div class="m">09:22</div><div class="m">Was Day 30</div><div class="m">10:42</div><span class="tag bad" style="width:112px">Revoked</span></div>
+    <div class="hold" style="--c:var(--h-2nd)"><div class="who"><b>Dr. Sofia Reyes</b><span>Second opinion</span></div><div class="scope">Same five sections</div><div class="m">11:02</div><div class="m">Day 30</div><div class="m">11:30</div><button class="btn sm danger" style="width:112px;padding:0;gap:0">Revoke</button></div>
+    <div class="hold" style="--c:var(--h-app)"><div class="who"><b>PulseFit</b><span>De-identified app copy</span></div><div class="scope">Stripped copy</div><div class="m">11:20</div><div class="m">No expiry</div><div class="m">11:22</div><span class="tag app ni" style="width:112px">De-identified</span></div>
+  </div>
+  <div class="cols eq" style="margin-top:6px;column-gap:20px">
+    <div class="sec rv" style="--d:2">
+      <div class="sec-h"><span class="t">A <em>Blocked open, logged</em></span><span class="r">On NEAR</span></div>
+      <div class="sec-b"><div class="navy term"><span class="dim">10:42</span> open_referral <span class="ok">ok</span>  chart shown<br><span class="dim">14:05</span> revoke_share <span class="ok">ok</span>  St. Aster General<br><span class="dim">14:31</span> open_referral <span class="no">refused</span>  access revoked</div></div>
+    </div>
+    <div class="sec rv" style="--d:3">
+      <div class="sec-h"><span class="t">B <em>What revoke does</em></span></div>
+      <div class="sec-b" style="padding-top:2px">
+        <div class="nrow"><span class="n">+</span><div><b>Stops the next open</b><p>The hospital cannot open the chart again.</p></div></div>
+        <div class="nrow"><span class="n">!</span><div><b>Does not erase a saved copy</b><p>A copy already downloaded stays where it is.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 08 TAMPER ============ -->
+<section data-screen="tamper" data-map="tamper">
+  <header class="ph" style="border-bottom-color:var(--red)">
+    <div class="ph-l">
+      <div class="eyebrow"><b>07</b><i></i>Verification · Tamper test</div>
+      <h1><span class="ln"><span style="--i:0">Envelope changed.</span></span><span class="ln"><span style="--i:1"><mark class="mark red">Open refused.</mark></span></span></h1>
+      <p class="lede rv">One byte was flipped after Maya approved. The recomputed hash no longer matches the one logged on NEAR, so the hospital cannot open the chart.</p>
+    </div>
+    <div class="ph-r"><div class="relay"></div></div>
+  </header>
+  <div class="cols" style="margin-top:26px;column-gap:28px">
+    <div>
+      <div class="tamper-band rv" style="--d:1"><div><div style="font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:8px">Verification</div><b>Failed at check 04</b></div><span class="tag" style="background:#fff;color:var(--red)">Blocked</span></div>
+      <div class="sec rv" style="--d:2">
+        <div class="sec-h"><span class="t">A <em>Envelope hash</em></span><span class="r">Differences in red</span></div>
+        <div class="sec-b">
+          <div class="lab mono" style="font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Approved on NEAR</div>
+          <div class="hx">92cedfab45a24322f6c5c1ae18c490a50817f7c087a145a127f3d07c51eae4ae</div>
+          <div class="lab mono" style="font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:14px 0 6px">Recomputed from the presented envelope</div>
+          <div class="hx" id="hx2"></div>
+        </div>
+      </div>
+      <div class="sec rv" style="--d:3"><div class="sec-h" style="border-top-color:var(--red)"><span class="t">B <em>Refusal, logged</em></span><span class="r">On NEAR</span></div><div class="sec-b"><div class="navy term"><span class="dim">10:44</span> open_referral <span class="no">refused</span>  envelope hash mismatch</div></div></div><div class="row rv" style="--d:4;margin-top:20px"><a class="btn sm ghost" href="#verify">Reset the envelope</a></div>
+    </div>
+    <div>
+      <div class="sec" style="margin-top:0">
+        <div class="sec-h" style="border-top-color:var(--red)"><span class="t">Checks <em>1 to 5</em></span><span class="r">Run as one bundle</span></div>
+        <div class="sec-b" style="padding-top:0">
+          <div class="chk"><span class="n">01</span><div><b>Fresh client nonce</b></div><span class="tag q">Pass</span></div>
+          <div class="chk"><span class="n">02</span><div><b>Gateway Intel quote</b></div><span class="tag q">Pass</span></div>
+          <div class="chk"><span class="n">03</span><div><b>Nonce bound to report</b></div><span class="tag q">Pass</span></div>
+          <div class="chk fail"><span class="n">04</span><div><b>Envelope hash matches approval</b><p>The presented hash differs from the one logged on NEAR.</p></div><span class="tag q bad">Fail</span></div>
+          <div class="chk fail"><span class="n">05</span><div><b>Hospital open</b><p>Refused and logged. The chart stays closed.</p></div><span class="tag q bad">Refused</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="foot"><span>Fictional data. Designed around <b>HIPAA principles</b>, not certified. De-identification is best effort, with a preview.</span><span>Revoking cannot erase a copy already saved.</span></div>
+
+<script>
+/* ---- relay map: the landing diagram, shrunk to a status board ---- */
+const ST = { // per screen: clinic, patient, hospital, reyes, app  => idle | active | done | revoked | broken
+  clinic:  {clinic:'done',  patient:'active', hospital:'idle', reyes:'idle', app:'idle'},
+  consent: {clinic:'done',  patient:'active', hospital:'idle', reyes:'idle', app:'idle'},
+  verify:  {clinic:'done',  patient:'active', hospital:'idle', reyes:'idle', app:'idle'},
+  hospital:{clinic:'done',  patient:'done',   hospital:'active', reyes:'idle', app:'idle'},
+  deid:    {clinic:'done',  patient:'done',   hospital:'done', reyes:'done', app:'active'},
+  timeline:{clinic:'done',  patient:'done',   hospital:'done', reyes:'done', app:'done'},
+  revoked: {clinic:'done',  patient:'done',   hospital:'revoked', reyes:'done', app:'done'},
+  tamper:  {clinic:'done',  patient:'done',   hospital:'broken', reyes:'idle', app:'idle'}
+};
+const RAIL = { // rail state text per screen
+  clinic:{clinic:['Sent',''],patient:['Pending',''],hospital:['Waiting',''],reyes:['Idle',''],app:['Idle',''],verify:['Ready',''],access:['3 holders','']},
+};
+const HUE = {hospital:'#3B82F6', reyes:'#7C3AED', app:'#F59E0B'};
+function relay(s){
+  const st = ST[s], R='#C4261D', INK='#0F172A', G='#C9D0DB';
+  const tint=(h)=>h+'70';
+  const col = (k,base)=> st[k]==='revoked'||st[k]==='broken' ? R : (st[k]==='idle' ? tint(base) : base);
+  const dash = k => st[k]==='idle' ? 'stroke-dasharray="4 5"' : '';
+  const w = k => st[k]==='idle' ? 1.75 : 3;
+  const node = (k,x,y,hue,glyph,label,lx,ly,anchor)=>{
+    const state = st[k];
+    const ring = state==='idle' ? tint(hue) : (state==='revoked'||state==='broken' ? R : hue);
+    const fill = state==='done' ? hue : (state==='revoked' ? R : '#fff');
+    const gcol = state==='done'||state==='revoked' ? '#fff' : (state==='idle'?'#9AA4B6':INK);
+    const pulse = state==='active' ? `<circle class="pulse" cx="${x}" cy="${y}" r="11" fill="none" stroke="${hue}" stroke-width="2"/>` : '';
+    return `${pulse}<circle cx="${x}" cy="${y}" r="11" fill="${fill}" stroke="${ring}" stroke-width="2.5"/>${glyph(x,y,gcol,state)}
+    <text x="${lx}" y="${ly}" text-anchor="${anchor}" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="${state==='idle'?'#7A8499':INK}">${label}</text>`;
+  };
+  const g = {
+    clinic:(x,y,c)=>`<path d="M${x-4} ${y}h8M${x} ${y-4}v8" stroke="${c}" stroke-width="2" stroke-linecap="square"/>`,
+    patient:(x,y,c)=>`<circle cx="${x}" cy="${y}" r="3.2" fill="${c}"/>`,
+    hosp:(x,y,c)=>`<path d="M${x-3.5} ${y-4}v8M${x+3.5} ${y-4}v8M${x-3.5} ${y}h7" stroke="${c}" stroke-width="2" stroke-linecap="square"/>`,
+    reyes:(x,y,c)=>`<circle cx="${x-3}" cy="${y}" r="2.2" fill="${c}"/><circle cx="${x+3}" cy="${y}" r="2.2" fill="${c}"/>`,
+    app:(x,y,c)=>`<rect x="${x-3.5}" y="${y-3.5}" width="7" height="7" fill="${c}"/>`
+  };
+  // paths
+  const trunk = `M123 60H150`;
+  const pH = `M150 60Q160 60 160 50V32Q160 22 170 22H215`;
+  const pR = `M150 60H215`;
+  const pA = `M150 60Q160 60 160 70V88Q160 98 170 98H215`;
+  const hs = st.hospital, tb = hs==='broken';
+  const lines = `
+    <path class="ln-draw" style="--len:80" d="M31 60H101" fill="none" stroke="${st.clinic==='done'?'#0D9488':G}" stroke-width="${st.clinic==='done'?3:1.75}" ${st.clinic==='done'?'':'stroke-dasharray="4 5"'} stroke-linecap="round"/>
+    <path class="ln-draw" style="--len:30" d="${trunk}" fill="none" stroke="${st.patient==='done'?INK:G}" stroke-width="${st.patient==='done'?3:1.75}" ${st.patient==='done'?'':'stroke-dasharray="4 5"'} stroke-linecap="round"/>
+    <path class="ln-draw" style="--len:140" d="${pH}" fill="none" stroke="${col('hospital',HUE.hospital)}" stroke-width="${w('hospital')}" ${dash('hospital')} stroke-linecap="round"/>
+    <path class="ln-draw" style="--len:90" d="${pR}" fill="none" stroke="${col('reyes',HUE.reyes)}" stroke-width="${w('reyes')}" ${dash('reyes')} stroke-linecap="round"/>
+    <path class="ln-draw" style="--len:140" d="${pA}" fill="none" stroke="${col('app',HUE.app)}" stroke-width="${w('app')}" ${dash('app')} stroke-linecap="round"/>`;
+  const brk = tb ? `<g stroke="${R}" stroke-width="3" stroke-linecap="square"><path d="M156 33l8 8M164 33l-8 8"/></g>` : '';
+  return `<svg viewBox="0 0 340 126" width="340" height="126" role="img" aria-label="Relay map, example story">
+    ${lines}${brk}
+    ${node('clinic',20,60,'#0D9488',g.clinic,'CLINIC',20,88,'middle')}
+    ${node('patient',112,60,INK,g.patient,'MAYA',112,88,'middle')}
+    ${node('hospital',226,22,HUE.hospital,g.hosp,'ST. ASTER',244,25,'start')}
+    ${node('reyes',226,60,HUE.reyes,g.reyes,'DR. REYES',244,63,'start')}
+    ${node('app',226,98,HUE.app,g.app,'PULSEFIT',244,101,'start')}
+  </svg><div class="cap">Relay map · example story</div>`;
+}
+const RS = { // rail state labels
+  clinic:  ['Sent','Pending','Waiting','Idle','Idle','Ready','3 holders'],
+  consent: ['Sent','Pending','Waiting','Idle','Idle','Ready','3 holders'],
+  verify:  ['Sent','Pending','Waiting','Idle','Idle','Verified','3 holders'],
+  hospital:['Sent','Approved','Open','Idle','Idle','Verified','3 holders'],
+  deid:    ['Sent','Approved','Opened','Shared','Sending','Verified','3 holders'],
+  timeline:['Sent','Approved','Opened','Shared','Copy','Verified','3 holders'],
+  revoked: ['Sent','Approved','Revoked','Shared','Copy','Verified','3 holders'],
+  tamper:  ['Sent','Approved','Refused','Idle','Idle','Failed','3 holders']
+};
+const KEYS=['clinic','patient','hospital','reyes','app','verify','access'];
+const NAVMAP={clinic:'clinic',consent:'consent',verify:'verify',hospital:'hospital',deid:'deid',timeline:'timeline',revoked:'revoked',tamper:'verify'};
+(function(){const a='92cedfab45a24322f6c5c1ae18c490a50817f7c087a145a127f3d07c51eae4ae',b='7f3a0c19d86e5b24a1e7c3908d52f6b4e0173ac9958d2b6f41e8a03c76d5b91e';
+document.getElementById('hx2').innerHTML=[...b].map((c,i)=>c===a[i]?c:'<u>'+c+'</u>').join('');})();
+function go(name){
+  if(!ST[name]) name='clinic';
+  document.querySelectorAll('[data-screen]').forEach(s=>s.classList.toggle('on',s.dataset.screen===name));
+  document.querySelectorAll('.ri').forEach(a=>a.classList.toggle('on',a.dataset.nav===NAVMAP[name]));
+  const sec=document.querySelector(`[data-screen="${name}"]`);
+  sec.querySelector('.relay').innerHTML=relay(name);
+  RS[name].forEach((t,i)=>{const el=document.querySelector(`[data-st="${KEYS[i]}"]`); if(el){el.textContent=t; el.className='st'+(/Approved|Verified|Open$|Opened|Sent|Shared|Copy/.test(t)?' ok':'')+(/Revoked|Refused|Failed/.test(t)?' bad':'');}});
+  window.scrollTo(0,0);
+  if(location.hash.slice(1)!==name) history.replaceState(null,'','#'+name);
+}
+window.go=go;
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a&&a.getAttribute('href').length>1){e.preventDefault();go(a.getAttribute('href').slice(1));}});
+document.querySelectorAll('.sel button').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('on');b.classList.toggle('out');}));
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+go(location.hash.slice(1)||'clinic');
+</script>
+</body>
+</html>

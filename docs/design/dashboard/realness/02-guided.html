@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TendAI Custody · Guided demo</title>
+<meta name="description" content="TendAI Custody mockup. Fictional example data. Designed around HIPAA principles.">
+<link rel="stylesheet" href="shell.css">
+</head>
+<body class="step">
+
+<div class="top">
+  <a class="brand" href="01-intro.html"><span class="mk">TC</span>TendAI Custody</a>
+  <div class="status"><span><span class="dot"></span>Near testnet</span><b>rr6c9910d7.testnet</b><span>Fictional data</span><span>Demo key</span></div>
+  <a class="go" href="02-guided.html#consent">Guided demo <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+</div>
+<div id="step-consent"><div class="stepper" role="navigation" aria-label="Guided demo progress">
+  <div class="sl">
+    <span class="sn">Step 2 of 6</span>
+    <span class="stxt">Maya reviews and approves</span>
+  </div>
+  <div class="srgt">
+    <div class="dots" aria-hidden="true"><span class="done">01</span><span class="now">02</span><span class="">03</span><span class="">04</span><span class="">05</span><span class="">06</span></div>
+    <a class="nxt" href="02-guided.html#reyes" style="--nc:var(--h-hosp)"><i></i>Next · Hospital B <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+  </div>
+</div></div>
+<div id="step-reyes" hidden><div class="stepper" role="navigation" aria-label="Guided demo progress">
+  <div class="sl">
+    <span class="sn">Step 4 of 6</span>
+    <span class="stxt">Maya asks Dr. Reyes for a second opinion</span>
+  </div>
+  <div class="srgt">
+    <div class="dots" aria-hidden="true"><span class="done">01</span><span class="done">02</span><span class="done">03</span><span class="now">04</span><span class="">05</span><span class="">06</span></div>
+    <a class="nxt" href="02-guided.html#consent" style="--nc:var(--ink)"><i></i>Next · Go to Maya <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+  </div>
+</div></div>
+<div id="rail-consent"><nav class="rail" aria-label="Workspace">
+<h6>Actors</h6>
+<a class="ri" data-nav="clinic" href="02-guided.html#consent" style="--c:var(--h-clinic)"><span class="n">01</span><i class="sw"></i><span>Clinic A</span><span class="st ok">Sent</span></a>
+<a class="ri on" data-nav="consent" href="02-guided.html#consent" style="--c:var(--ink)"><span class="n">02</span><i class="sw"></i><span>Maya</span><span class="st">Pending</span></a>
+<a class="ri next" data-nav="hospital" href="02-guided.html#consent" style="--c:var(--h-hosp)"><span class="n">03</span><i class="sw"></i><span>Hospital B</span><span class="st next-lab">Next</span></a>
+<a class="ri" data-nav="reyes" href="02-guided.html#reyes" style="--c:var(--h-2nd)"><span class="n">04</span><i class="sw"></i><span>Dr. Reyes</span><span class="st">Idle</span></a>
+<a class="ri" data-nav="deid" href="02-guided.html#reyes" style="--c:var(--h-app)"><span class="n">05</span><i class="sw"></i><span>PulseFit</span><span class="st">Idle</span></a>
+<h6>Proof</h6>
+<a class="ri" data-nav="timeline" href="05-log.html" style="--c:var(--sig)"><span class="n">06</span><i class="sw"></i><span>Custody</span><span class="st">On NEAR</span></a>
+<a class="ri" data-nav="verify" href="02-guided.html#consent" style="--c:var(--sig)"><span class="n">07</span><i class="sw"></i><span>Verification</span><span class="st">Ready</span></a>
+<a class="ri" data-nav="revoked" href="02-guided.html#consent" style="--c:var(--red)"><span class="n">08</span><i class="sw"></i><span>Access</span><span class="st">3 holders</span></a>
+<h6>Guides</h6>
+<a class="ri" data-nav="help" href="03-help.html" style="--c:var(--ink)"><span class="n">09</span><i class="sw"></i><span>Help</span><span class="st"></span></a>
+<a class="ri" data-nav="support" href="04-support.html" style="--c:var(--ink)"><span class="n">10</span><i class="sw"></i><span>Support</span><span class="st"></span></a>
+<div class="case"><b>Riverbend Family Clinic</b>Example story on testnet.<br>Case RR-0142</div>
+</nav></div>
+<div id="rail-reyes" hidden><nav class="rail" aria-label="Workspace">
+<h6>Actors</h6>
+<a class="ri" data-nav="clinic" href="02-guided.html#consent" style="--c:var(--h-clinic)"><span class="n">01</span><i class="sw"></i><span>Clinic A</span><span class="st ok">Sent</span></a>
+<a class="ri next" data-nav="consent" href="02-guided.html#consent" style="--c:var(--ink)"><span class="n">02</span><i class="sw"></i><span>Maya</span><span class="st next-lab">Next</span></a>
+<a class="ri" data-nav="hospital" href="02-guided.html#consent" style="--c:var(--h-hosp)"><span class="n">03</span><i class="sw"></i><span>Hospital B</span><span class="st ok">Opened</span></a>
+<a class="ri on" data-nav="reyes" href="02-guided.html#reyes" style="--c:var(--h-2nd)"><span class="n">04</span><i class="sw"></i><span>Dr. Reyes</span><span class="st">Waiting</span></a>
+<a class="ri" data-nav="deid" href="02-guided.html#reyes" style="--c:var(--h-app)"><span class="n">05</span><i class="sw"></i><span>PulseFit</span><span class="st">Idle</span></a>
+<h6>Proof</h6>
+<a class="ri" data-nav="timeline" href="05-log.html" style="--c:var(--sig)"><span class="n">06</span><i class="sw"></i><span>Custody</span><span class="st">On NEAR</span></a>
+<a class="ri" data-nav="verify" href="02-guided.html#consent" style="--c:var(--sig)"><span class="n">07</span><i class="sw"></i><span>Verification</span><span class="st">Ready</span></a>
+<a class="ri" data-nav="revoked" href="02-guided.html#consent" style="--c:var(--red)"><span class="n">08</span><i class="sw"></i><span>Access</span><span class="st">3 holders</span></a>
+<h6>Guides</h6>
+<a class="ri" data-nav="help" href="03-help.html" style="--c:var(--ink)"><span class="n">09</span><i class="sw"></i><span>Help</span><span class="st"></span></a>
+<a class="ri" data-nav="support" href="04-support.html" style="--c:var(--ink)"><span class="n">10</span><i class="sw"></i><span>Support</span><span class="st"></span></a>
+<div class="case"><b>Riverbend Family Clinic</b>Example story on testnet.<br>Case RR-0142</div>
+</nav></div>
+<main class="stage">
+
+<section data-screen="consent" class="on">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>02</b><i></i>Maya · Consent</div>
+      <h1><span class="ln">Cardiology <mark class="mark">referral</mark></span></h1>
+      <p class="lede">This referral is fictional. Leave out any section the hospital does not need.</p>
+    </div>
+    <div class="ph-r"><div class="relay">
+<svg viewBox="0 0 340 126" width="340" height="126" role="img" aria-label="Relay map, Maya is reviewing">
+  <path d="M31 60H101" fill="none" stroke="#0D9488" stroke-width="3" stroke-linecap="round"/>
+  <path d="M123 60H150" fill="none" stroke="#C9D0DB" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <path d="M150 60Q160 60 160 50V32Q160 22 170 22H215" fill="none" stroke="#3B82F670" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <path d="M150 60H215" fill="none" stroke="#7C3AED70" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <path d="M150 60Q160 60 160 70V88Q160 98 170 98H215" fill="none" stroke="#F59E0B70" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <circle cx="20" cy="60" r="11" fill="#0D9488" stroke="#0D9488" stroke-width="2.5"/>
+  <path d="M16 60h8M20 56v8" stroke="#fff" stroke-width="2" stroke-linecap="square"/>
+  <text x="20" y="88" text-anchor="middle" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#0F172A">CLINIC</text>
+  <circle class="pulse" cx="112" cy="60" r="11" fill="none" stroke="#0F172A" stroke-width="2"/>
+  <circle cx="112" cy="60" r="11" fill="#fff" stroke="#0F172A" stroke-width="2.5"/>
+  <circle cx="112" cy="60" r="3.2" fill="#0F172A"/>
+  <text x="112" y="88" text-anchor="middle" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#0F172A">MAYA</text>
+  <circle cx="226" cy="22" r="11" fill="#fff" stroke="#3B82F670" stroke-width="2.5"/>
+  <path d="M222.5 18v8M229.5 18v8M222.5 22h7" stroke="#9AA4B6" stroke-width="2" stroke-linecap="square"/>
+  <text x="244" y="25" text-anchor="start" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#7A8499">ST. ASTER</text>
+  <circle cx="226" cy="60" r="11" fill="#fff" stroke="#7C3AED70" stroke-width="2.5"/>
+  <circle cx="223" cy="60" r="2.2" fill="#9AA4B6"/><circle cx="229" cy="60" r="2.2" fill="#9AA4B6"/>
+  <text x="244" y="63" text-anchor="start" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#7A8499">DR. REYES</text>
+  <circle cx="226" cy="98" r="11" fill="#fff" stroke="#F59E0B70" stroke-width="2.5"/>
+  <rect x="222.5" y="94.5" width="7" height="7" fill="#9AA4B6"/>
+  <text x="244" y="101" text-anchor="start" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#7A8499">PULSEFIT</text>
+</svg>
+<div class="cap">Relay map · example story</div>
+</div></div>
+  </header>
+  <div class="sec">
+        <div class="sec-h">
+          <span class="t">A <em>Include</em></span>
+          <span class="expires">
+            <span class="r">5 of 6 · through Day 30</span>
+            <div class="seg"><button type="button">7 days</button><button type="button" class="on">30 days</button><button type="button">90 days</button></div>
+          </span>
+        </div>
+        <div class="sec-b sel" id="sections">
+          <button type="button" class="on"><span class="bx"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5l3 3 5-6"/></svg></span>History</button>
+          <button type="button" class="on"><span class="bx"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5l3 3 5-6"/></svg></span>Medications</button>
+          <button type="button" class="on"><span class="bx"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5l3 3 5-6"/></svg></span>Labs</button>
+          <button type="button" class="on"><span class="bx"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5l3 3 5-6"/></svg></span>Imaging</button>
+          <button type="button" class="on"><span class="bx"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5l3 3 5-6"/></svg></span>Notes</button>
+          <button type="button" class="out"><span class="bx"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 5l3 3 5-6"/></svg></span><span class="t">Counseling</span></button>
+        </div>
+      </div>
+  <div class="sec" style="margin-top:20px">
+    <div class="sec-h">
+      <span class="t">C <em>Summary, made inside a
+        <button type="button" class="tip" aria-expanded="false">NEAR AI Cloud TEE
+          <span class="tip-box"><span class="lab">Sealed AI</span>The summary is written inside a locked server that even we cannot read. Maya reads it before she approves.</span>
+        </button>
+      </em></span>
+      <span class="r">Maya reads this before she approves</span>
+    </div>
+    <div class="sec-b">
+      <div class="navy summary">
+        <div class="row" style="justify-content:space-between"><span class="lab">Summary</span><span class="tag ok">Verified</span></div>
+        <p class="txt">This panel is a fictional referral note. It does not include a measurement or a personal identifier.</p>
+        <div class="bar">
+          <span>Signature
+            <button type="button" class="tip" aria-expanded="false"><b>provider_tee</b>
+              <span class="tip-box up"><span class="lab">Sealed signature</span>This mark means the sealed server signed the summary. Approve stays off unless this exact mark is present.</span>
+            </button>
+          </span>
+          <span>Model <b>z-ai/glm-5.3-flash</b></span>
+          <span>Round trip <b>2.8 s</b></span>
+          <span>
+            <button type="button" class="tip" aria-expanded="false">Nonce <b>fresh</b>
+              <span class="tip-box up"><span class="lab">One-time check</span>A nonce is a random number used once. It proves this check is fresh, not a replay of an old one.</span>
+            </button>
+          </span>
+          <span>
+            <button type="button" class="tip" aria-expanded="false">Logged
+              <b>on chain</b>
+              <span class="tip-box up"><span class="lab">On NEAR</span>A public record of who shared what, and when. It stores ids, hashes, and times. It does not store the chart itself.</span>
+            </button>
+          </span>
+          <a href="05-log.html" style="margin-left:auto;color:var(--mint);text-decoration:underline;text-underline-offset:3px">See the log</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" style="margin-top:20px">
+    <button class="btn" type="button">Approve and share <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></button>
+    <button class="btn danger" type="button">Deny</button>
+    <span class="mono small" style="color:var(--faint);font-size:11.5px;letter-spacing:0">Approve stays off unless the signature is provider_tee.</span>
+  </div>
+  <div class="sec">
+    <div class="sec-h"><span class="t">D <em>Words you may see here</em></span><span class="r">Hover a dotted term in the summary to read it in place</span></div>
+    <div class="sec-b" style="padding-top:10px">
+      <dl class="gloss gloss-4">
+        <div class="gi"><dt>TEE</dt><dd>Sealed AI. The summary is written inside a locked server that even we cannot read.</dd></div>
+        <div class="gi"><dt>provider_tee</dt><dd>The sealed server’s signature. Approve stays off unless this exact mark is present.</dd></div>
+        <div class="gi"><dt>nonce</dt><dd>A random number used once. It proves this check is fresh, not a replay of an old one.</dd></div>
+        <div class="gi"><dt>on chain</dt><dd>A public record of who shared what, and when. It stores ids, hashes, and times, not the chart.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+
+<section data-screen="reyes">
+  <header class="ph">
+    <div class="ph-l">
+      <div class="eyebrow"><b>04</b><i></i>Dr. Sofia Reyes · Northgate Heart Institute</div>
+      <h1><span class="ln">Waiting for <mark class="mark">Maya</mark></span></h1>
+      <p class="lede">Dr. Reyes has not received a second-opinion share yet. Maya sends it from her records when she is ready.</p>
+    </div>
+    <div class="ph-r"><div class="relay">
+<svg viewBox="0 0 340 126" width="340" height="126" role="img" aria-label="Relay map, waiting for Maya to share with Dr. Reyes">
+  <path d="M31 60H101" fill="none" stroke="#0D9488" stroke-width="3" stroke-linecap="round"/>
+  <path d="M123 60H150" fill="none" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M150 60Q160 60 160 50V32Q160 22 170 22H215" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round"/>
+  <path d="M150 60H215" fill="none" stroke="#7C3AED70" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <path d="M150 60Q160 60 160 70V88Q160 98 170 98H215" fill="none" stroke="#F59E0B70" stroke-width="1.75" stroke-dasharray="4 5" stroke-linecap="round"/>
+  <circle cx="20" cy="60" r="11" fill="#0D9488" stroke="#0D9488" stroke-width="2.5"/>
+  <path d="M16 60h8M20 56v8" stroke="#fff" stroke-width="2" stroke-linecap="square"/>
+  <text x="20" y="88" text-anchor="middle" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#0F172A">CLINIC</text>
+  <circle cx="112" cy="60" r="11" fill="#0F172A" stroke="#0F172A" stroke-width="2.5"/>
+  <circle cx="112" cy="60" r="3.2" fill="#fff"/>
+  <text x="112" y="88" text-anchor="middle" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#0F172A">MAYA</text>
+  <circle cx="226" cy="22" r="11" fill="#3B82F6" stroke="#3B82F6" stroke-width="2.5"/>
+  <path d="M222.5 18v8M229.5 18v8M222.5 22h7" stroke="#fff" stroke-width="2" stroke-linecap="square"/>
+  <text x="244" y="25" text-anchor="start" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#0F172A">ST. ASTER</text>
+  <circle class="pulse" cx="226" cy="60" r="11" fill="none" stroke="#7C3AED" stroke-width="2"/>
+  <circle cx="226" cy="60" r="11" fill="#fff" stroke="#7C3AED" stroke-width="2.5"/>
+  <circle cx="223" cy="60" r="2.2" fill="#0F172A"/><circle cx="229" cy="60" r="2.2" fill="#0F172A"/>
+  <text x="244" y="63" text-anchor="start" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#0F172A">DR. REYES</text>
+  <circle cx="226" cy="98" r="11" fill="#fff" stroke="#F59E0B70" stroke-width="2.5"/>
+  <rect x="222.5" y="94.5" width="7" height="7" fill="#9AA4B6"/>
+  <text x="244" y="101" text-anchor="start" font-family="Plex Mono" font-size="9" font-weight="500" letter-spacing=".8" fill="#7A8499">PULSEFIT</text>
+</svg>
+<div class="cap">Relay map · example story</div>
+</div></div>
+  </header>
+  <div class="empty">
+    <div class="lab">Second opinion</div>
+    <h2>Nothing is here yet.</h2>
+    <p>A second-opinion share reaches Dr. Reyes only after Maya sends it. The clinic cannot send this for her, and the hospital cannot either.</p>
+    <div class="row">
+      <a class="btn" href="#consent">Go to Maya <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M1 7h11M8 3l4 4-4 4"/></svg></a>
+      <a class="btn ghost" href="03-help.html">Why is this empty?</a>
+    </div>
+  </div>
+</section>
+
+</main>
+<div class="foot">
+  <span>Fictional data. Designed around <b>HIPAA principles</b>, not certified. De-identification is best effort, with a preview.</span>
+  <span class="flinks">
+    <a href="03-help.html">Help</a>
+    <a href="04-support.html">Support</a>
+    <a href="04-support.html#privacy">Privacy</a>
+    <a href="04-support.html#terms">Terms</a>
+  </span>
+</div>
+
+
+<script>
+function show(name){
+  const isReyes = name === 'reyes';
+  document.querySelectorAll('[data-screen]').forEach(s => s.classList.toggle('on', s.dataset.screen === (isReyes ? 'reyes' : 'consent')));
+  document.getElementById('step-consent').hidden = isReyes;
+  document.getElementById('step-reyes').hidden = !isReyes;
+  document.getElementById('rail-consent').hidden = isReyes;
+  document.getElementById('rail-reyes').hidden = !isReyes;
+  if (location.hash.slice(1) !== (isReyes ? 'reyes' : 'consent')) history.replaceState(null,'','#'+(isReyes?'reyes':'consent'));
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.tip').forEach(t => t.addEventListener('click', e => {
+  e.preventDefault();
+  const open = t.classList.contains('open');
+  document.querySelectorAll('.tip').forEach(x => { x.classList.remove('open'); x.setAttribute('aria-expanded','false'); });
+  if (!open){ t.classList.add('open'); t.setAttribute('aria-expanded','true'); }
+}));
+document.querySelectorAll('.sel button').forEach(b => b.addEventListener('click', () => { b.classList.toggle('on'); b.classList.toggle('out'); }));
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); }));
+window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1) || 'consent');
+</script>
+
+</body>
+</html>
