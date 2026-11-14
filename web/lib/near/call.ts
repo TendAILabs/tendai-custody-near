@@ -1,6 +1,6 @@
-import { Account, JsonRpcProvider, type KeyPairString } from "near-api-js";
+import { Account, type KeyPairString } from "near-api-js";
+import { nearProvider } from "./provider.ts";
 
-const RPC_URL = process.env.NEAR_RPC_URL ?? "https://test.rpc.fastnear.com";
 const CREATION = new Set(["create_record", "request_referral", "create_share", "submit_reply"]);
 
 type RawOutcome = {
@@ -42,7 +42,7 @@ function contractCode(text: string): string | null {
 }
 
 async function callOnce(input: ContractCallInput): Promise<{ hash: string; value: unknown }> {
-  const account = new Account(input.accountId, new JsonRpcProvider({ url: RPC_URL }), input.secret as KeyPairString);
+  const account = new Account(input.accountId, nearProvider(), input.secret as KeyPairString);
   let raw: RawOutcome;
   try {
     raw = (await account.callFunctionRaw({

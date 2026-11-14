@@ -49,8 +49,9 @@ export function outcomeOf(raw: Outcome): { hash: string; value: unknown } {
 }
 
 export async function broadcastLocal(record: LocalDeviceKey, contractId: string, call: BroadcastCall): Promise<{ hash: string; value: unknown }> {
-  const { Account, JsonRpcProvider } = await import("near-api-js");
-  const account = new Account(record.accountId, new JsonRpcProvider({ url: "https://test.rpc.fastnear.com" }), record.secret as never);
+  const { Account } = await import("near-api-js");
+  const { nearProvider } = await import("../near/provider.ts");
+  const account = new Account(record.accountId, nearProvider(), record.secret as never);
   const raw = (await account.callFunctionRaw({
     contractId,
     methodName: call.methodName,

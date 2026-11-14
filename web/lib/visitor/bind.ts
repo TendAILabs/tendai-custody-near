@@ -213,14 +213,14 @@ export async function handleVisitorSignOut(request: Request, deps?: VisitorBindD
 
 export async function verifyNep413(input: Nep413Check): Promise<boolean> {
   const { verifyMessage } = await import("near-api-js/nep413");
-  const { JsonRpcProvider } = await import("near-api-js");
+  const { nearProvider } = await import("../near/provider.ts");
   try {
     await verifyMessage({
       signerAccountId: input.accountId,
       signerPublicKey: input.publicKey,
       signature: input.signature,
       payload: { message: input.message, recipient: input.recipient, nonce: input.nonce },
-      provider: new JsonRpcProvider({ url: process.env.NEAR_RPC_URL ?? "https://test.rpc.fastnear.com" }),
+      provider: nearProvider(),
     });
     return true;
   } catch {

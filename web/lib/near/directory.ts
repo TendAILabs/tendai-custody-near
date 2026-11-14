@@ -1,7 +1,8 @@
 import { TESTNET_CONTRACT } from "../fixtures.ts";
+import { TESTNET_RPC_URLS } from "./endpoints.ts";
 import { accountUrl, isAccountId } from "./explorer.ts";
 
-const HOSTS = ["https://test.rpc.fastnear.com", "https://rpc.testnet.near.org"];
+const HOSTS = TESTNET_RPC_URLS.slice(0, 3);
 const OK_TTL_MS = 60_000;
 const FAIL_TTL_MS = 10_000;
 

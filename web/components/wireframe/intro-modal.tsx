@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { GUIDE_STEPS } from "@/lib/guide";
@@ -39,8 +40,27 @@ export function IntroModal({
   resume?: boolean;
 }) {
   const router = useRouter();
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setGuided(false);
+      onClose("explore");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
   return (
-    <div className="c2-scrim" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+    <div
+      className="c2-scrim"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="intro-title"
+      onClick={(event) => {
+        if (event.target !== event.currentTarget) return;
+        setGuided(false);
+        onClose("explore");
+      }}
+    >
       <div className="c2-intro">
         <div className="c2-eye">How this works</div>
         <h1 id="intro-title">

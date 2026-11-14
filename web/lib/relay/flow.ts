@@ -17,6 +17,7 @@ import { readTeeEvidence, type TeeServerEvidence } from "../tee/evidence.ts";
 import { isServerSummaryHash } from "../tee/summary-hash.ts";
 import { filterSharesToSession } from "./session-shares.ts";
 import { clientPatientSign } from "../wallet/client-signer.ts";
+import { rpcPost } from "../near/rpc-fetch.ts";
 import { custodyAad, encryptionContext, randomRequestId, type CreateMethodName } from "../near/context.ts";
 
 export type DemoConfig = {
@@ -24,7 +25,6 @@ export type DemoConfig = {
   accounts: { clinic: string; patient: string; hospital: string; second: string; app: string };
 };
 
-const RPC = "https://test.rpc.fastnear.com";
 const IDENTIFIERS = [
   { category: "name", value: MAYA.name },
   { category: "dob", value: MAYA.dob },
@@ -67,23 +67,18 @@ async function chainPublic(contractId: string, accountId: string): Promise<Uint8
 }
 
 async function rpcView<T>(contractId: string, method: string, args: Record<string, unknown>): Promise<T> {
-  const response = await fetch(RPC, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: "view",
-      method: "query",
-      params: {
-        request_type: "call_function",
-        account_id: contractId,
-        method_name: method,
-        args_base64: btoa(JSON.stringify(args)),
-        finality: "optimistic",
-      },
-    }),
-  });
-  const payload = (await response.json()) as { result?: { result?: number[]; error?: string } };
+  const { payload } = (await rpcPost({
+    jsonrpc: "2.0",
+    id: "view",
+    method: "query",
+    params: {
+      request_type: "call_function",
+      account_id: contractId,
+      method_name: method,
+      args_base64: btoa(JSON.stringify(args)),
+      finality: "optimistic",
+    },
+  })) as { payload: { result?: { result?: number[]; error?: string } } };
   if (payload.result?.error) throw new Error("view failed");
   const text = new TextDecoder().decode(Uint8Array.from(payload.result?.result ?? []));
   return (text ? JSON.parse(text) : null) as T;

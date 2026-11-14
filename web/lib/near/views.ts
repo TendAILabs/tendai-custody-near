@@ -1,23 +1,19 @@
-const RPC_URL = process.env.NEAR_RPC_URL ?? "https://test.rpc.fastnear.com";
+import { rpcPost } from "./rpc-fetch.ts";
 
 export async function viewMethod<T>(contractId: string, method: string, args: Record<string, unknown>): Promise<T> {
-  const response = await fetch(RPC_URL, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: "view",
-      method: "query",
-      params: {
-        request_type: "call_function",
-        account_id: contractId,
-        method_name: method,
-        args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
-        finality: "optimistic",
-      },
-    }),
+  const { payload: raw } = await rpcPost({
+    jsonrpc: "2.0",
+    id: "view",
+    method: "query",
+    params: {
+      request_type: "call_function",
+      account_id: contractId,
+      method_name: method,
+      args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
+      finality: "optimistic",
+    },
   });
-  const payload = (await response.json()) as {
+  const payload = raw as {
     error?: { message?: string };
     result?: { result?: number[]; error?: string };
   };

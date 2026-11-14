@@ -1,13 +1,7 @@
-import { JsonRpcProvider } from "near-api-js";
-
-function rpcUrl(): string {
-  const url = process.env.NEAR_RPC_URL;
-  if (!url) throw new Error("Missing NEAR_RPC_URL");
-  return url;
-}
+import { nearProvider } from "./provider.ts";
 
 export async function viewContract<T>(method: string, args: Record<string, unknown>): Promise<T> {
-  const provider = new JsonRpcProvider({ url: rpcUrl() });
+  const provider = nearProvider();
   return provider.callFunction({
     contractId: process.env.RELAY_CONTRACT_ID ?? "",
     method,

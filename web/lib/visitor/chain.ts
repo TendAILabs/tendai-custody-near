@@ -1,7 +1,6 @@
-import { Account, JsonRpcProvider, type KeyPairString } from "near-api-js";
+import { Account, type KeyPairString } from "near-api-js";
+import { nearProvider } from "../near/provider.ts";
 import { faucetAccountId } from "./faucet-env.ts";
-
-const RPC_URL = process.env.NEAR_RPC_URL ?? "https://test.rpc.fastnear.com";
 
 type Outcome = {
   transaction_outcome?: { id?: string };
@@ -14,7 +13,7 @@ function txHash(raw: Outcome): string {
 }
 
 export async function readBalanceYocto(accountId: string): Promise<bigint> {
-  const provider = new JsonRpcProvider({ url: RPC_URL });
+  const provider = nearProvider();
   const view = await provider.viewAccount({ accountId });
   return view.amount;
 }
@@ -23,7 +22,7 @@ export async function transferFromFaucet(to: string, yocto: bigint): Promise<str
   const accountId = faucetAccountId();
   const secret = process.env.RELAY_FAUCET_PRIVATE_KEY ?? "";
   if (!accountId || !secret) throw new Error("faucet not configured");
-  const account = new Account(accountId, new JsonRpcProvider({ url: RPC_URL }), secret as KeyPairString);
+  const account = new Account(accountId, nearProvider(), secret as KeyPairString);
   const raw = (await account.transfer({ receiverId: to, amount: yocto })) as Outcome;
   return txHash(raw);
 }

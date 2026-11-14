@@ -1,4 +1,4 @@
-const RPC = "https://test.rpc.fastnear.com";
+import { rpcPost } from "./rpc-fetch.ts";
 
 export type ChainEvent = {
   at_ns: string;
@@ -137,24 +137,19 @@ function plainRpcError(message: string): Error {
 }
 
 async function rpcViewOnce<T>(contractId: string, method: string, args: Record<string, unknown>): Promise<T> {
-  const response = await fetch(RPC, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: "view",
-      method: "query",
-      params: {
-        request_type: "call_function",
-        account_id: contractId,
-        method_name: method,
-        args_base64: btoa(JSON.stringify(args)),
-        finality: "optimistic",
-      },
-    }),
-  });
-  const payload = (await response.json()) as RpcPayload;
-  if (!response.ok) throw plainRpcError(String(response.status));
+  const { status, payload } = (await rpcPost({
+    jsonrpc: "2.0",
+    id: "view",
+    method: "query",
+    params: {
+      request_type: "call_function",
+      account_id: contractId,
+      method_name: method,
+      args_base64: btoa(JSON.stringify(args)),
+      finality: "optimistic",
+    },
+  })) as { status: number; payload: RpcPayload };
+  if (status < 200 || status >= 300) throw plainRpcError(String(status));
   if (payload.error?.message) throw plainRpcError(payload.error.message);
   if (payload.result?.error) throw plainRpcError(payload.result.error);
   const text = new TextDecoder().decode(Uint8Array.from(payload.result?.result ?? []));

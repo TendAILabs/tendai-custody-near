@@ -1,3 +1,4 @@
+import { rpcPost } from "../near/rpc-fetch.ts";
 export type PublicStatus = {
   near: "reachable" | "down";
   tee: "configured" | "missing";
@@ -93,14 +94,10 @@ export async function readPublicStatus(input?: {
 async function defaultProbe(signal: AbortSignal): Promise<PublicStatus> {
   let near: PublicStatus["near"] = "down";
   try {
-    const response = await fetch("https://test.rpc.fastnear.com", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ jsonrpc: "2.0", id: "status", method: "status", params: [] }),
-      signal,
-    });
-    const body = (await response.json()) as { result?: { chain_id?: string } };
-    if (response.ok && body.result?.chain_id) near = "reachable";
+    const { status, payload } = await rpcPost({ jsonrpc: "2.0", id: "status", method: "status", params: [] }, { timeoutMs: 5_000 });
+    const body = payload as { result?: { chain_id?: string } };
+    if (signal.aborted) throw new Error("aborted");
+    if (status === 200 && body.result?.chain_id) near = "reachable";
   } catch {
     near = "down";
   }

@@ -34,7 +34,10 @@ function place(target: Box, width: number, height: number): { top: number; left:
     top = Math.max(margin, vh - height - margin);
     left = margin;
   }
-  return { top, left };
+  return {
+    top: Math.min(Math.max(margin, top), Math.max(margin, vh - height - margin)),
+    left: Math.min(Math.max(margin, left), Math.max(margin, vw - width - margin)),
+  };
 }
 
 export function GuideTour() {
@@ -47,6 +50,9 @@ export function GuideTour() {
   const [index, setIndex] = useState(readTourStep);
   const [targetKey, setTargetKey] = useState<TourTarget>("setup");
   const [found, setFound] = useState(false);
+  const [stale, setStale] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const missSince = useRef<number | null>(null);
   const targetRef = useRef<TourTarget>("setup");
   const foundRef = useRef(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -123,12 +129,19 @@ export function GuideTour() {
       const card = cardRef.current;
       if (!el) {
         anchored.current = null;
+        if (missSince.current === null) missSince.current = Date.now();
+        if (Date.now() - missSince.current > 6000) setStale(true);
         if (card) {
-          card.style.top = `${Math.max(12, window.innerHeight - 240)}px`;
-          card.style.left = "12px";
+          const box = card.getBoundingClientRect();
+          const w = box.width || Math.min(340, window.innerWidth - 24);
+          const h = box.height || 220;
+          card.style.top = `${Math.round(Math.max(12, (window.innerHeight - h) / 2))}px`;
+          card.style.left = `${Math.round(Math.max(12, (window.innerWidth - w) / 2))}px`;
         }
         return;
       }
+      missSince.current = null;
+      setStale(false);
       if (anchored.current !== el) {
         anchored.current = el;
         const narrow = window.innerWidth < 720;
@@ -164,7 +177,7 @@ export function GuideTour() {
       window.removeEventListener("resize", schedule);
       clearMark();
     };
-  }, [index, pathname, state.teeStatus, step.color]);
+  }, [index, pathname, state.teeStatus, step.color, attempt]);
 
   useEffect(() => {
     const key = `${index}:${targetKey}`;
@@ -202,12 +215,36 @@ export function GuideTour() {
       <h2 id="guide-callout-title">{step.label}</h2>
       <p>{why}</p>
       {found ? null : (
-        <p className="guide-callout-miss">This control is not on screen yet. It shows up on this step&apos;s page once the story reaches it.</p>
+        <p className="guide-callout-miss" role="status">
+          {stale
+            ? "Still waiting for NEAR testnet or for this page. You can retry, skip to the next step, or exit."
+            : "Waiting for NEAR testnet and this page. The control shows up here once it is ready."}
+        </p>
       )}
       <div className="guide-callout-actions">
         <button type="button" onClick={() => go(index - 1)} disabled={index === 0}>
           Back
         </button>
+        {!found && stale ? (
+          <button
+            type="button"
+            onClick={() => {
+              missSince.current = null;
+              anchored.current = null;
+              setStale(false);
+              setAttempt((value) => value + 1);
+              router.push(step.href);
+              router.refresh();
+            }}
+          >
+            Retry
+          </button>
+        ) : null}
+        {!found && stale && !last ? (
+          <button type="button" onClick={() => go(index + 1)}>
+            Skip
+          </button>
+        ) : null}
         {canNext ? (
           <button type="button" className="guide-next" onClick={() => (last ? exit() : go(index + 1))}>
             {last ? "Done" : "Next"}
