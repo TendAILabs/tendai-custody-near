@@ -5,27 +5,27 @@ export const KNOWLEDGE_QUOTES: { term: string; file: string; text: string }[] = 
   {
     term: "Patient holds the key",
     file: "README.md",
-    text: "The patient holds the key.",
+    text: "The Guided Demo keeps the patient signing key and `DEMO_ENC_SEED` on the server.",
   },
   {
     term: "On-chain custody",
     file: "README.md",
-    text: "NEAR stores hashes, scope, expiry, and the custody log.",
+    text: "The contract stores account ids, organization display names, section hashes, scope, expiry, status, and open counters.",
   },
   {
     term: "TEE is not a key broker",
     file: "README.md",
-    text: "It does not re-encrypt for the hospital: NEAR AI Cloud is an inference API, not a key broker.",
+    text: "The TEE does not hold the hospital wrap key.",
   },
   {
     term: "Why NEAR",
-    file: "README.md",
+    file: "web/content/docs.ts",
     text: "The contract is a neutral record that no clinic can edit.",
   },
   {
     term: "Staff keys",
     file: "README.md",
-    text: "Staff software can request and open. It cannot consent for a patient or move funds",
+    text: "The clinic function-call key cannot call `request_open` or `request_owner_open`, so a clinic staff key cannot open a share.",
   },
   {
     term: "HIPAA principles",
@@ -85,17 +85,17 @@ export const KNOWLEDGE_QUOTES: { term: string; file: string; text: string }[] = 
   {
     term: "Step 1",
     file: "web/lib/guide.ts",
-    text: "Press the Use the demo server account button to continue.",
+    text: "Press Use the demo server account so Maya has a patient account on this browser before the clinic sends anything.",
   },
   {
     term: "Step 3",
     file: "web/lib/guide.ts",
-    text: "Tap Check with secure AI, and then tap Approve and share.",
+    text: "Press Check with secure AI and then Approve and share, so Maya's signature is what lets the hospital open the record.",
   },
   {
     term: "Step 6",
     file: "web/lib/guide.ts",
-    text: "The contract check refuses the open, and nothing new is written.",
+    text: "The contract check refuses the open",
   },
   {
     term: "Hospital summary",
@@ -110,7 +110,7 @@ export const KNOWLEDGE_QUOTES: { term: string; file: string; text: string }[] = 
   {
     term: "1 yoctoNEAR",
     file: "SECURITY.md",
-    text: "Consent, decline, patient-created shares, and revoke require the patient predecessor and exactly 1 yoctoNEAR.",
+    text: "Those methods require exactly 1 yoctoNEAR.",
   },
   {
     term: "Not medical advice",
@@ -141,7 +141,7 @@ export const ASSIST_LINKS = [
 
 export const ASSIST_KNOWLEDGE = [
   "TendAI Custody is a demo of patient-approved record transfers.",
-  "The patient holds the key. In this demo the demo server holds Maya's key on testnet. The full design keeps that key on her device, and that device re-wraps the data key for the receiving hospital. A clinic encrypts on its own device. NEAR stores hashes, scope, expiry, and the custody log. The NEAR AI Cloud TEE writes the minimum-necessary summary. It does not re-encrypt for the hospital: NEAR AI Cloud is an inference API, not a key broker.",
+  "The Guided Demo keeps the patient signing key and `DEMO_ENC_SEED` on the server. In this demo the demo server holds Maya's key on testnet. The full design keeps that key on her device, and that device re-wraps the data key for the receiving hospital. A clinic encrypts on its own device. The contract stores account ids, organization display names, section hashes, scope, expiry, status, and open counters. NEAR stores hashes, scope, expiry, and the custody log. The NEAR AI Cloud TEE writes the minimum-necessary summary. The TEE does not hold the hospital wrap key. It does not re-encrypt for the hospital: NEAR AI Cloud is an inference API, not a key broker.",
   "",
   "People",
   "Maya Okafor is the fictional patient. Riverbend Family Clinic, with Dr. Lena Park, already holds the source chart, because that is where the story starts.",
@@ -153,9 +153,9 @@ export const ASSIST_KNOWLEDGE = [
   "",
   "Guided demo",
   "There are seven steps.",
-  "1. Set up Maya, on /patient. Press the Use the demo server account button to continue.",
+  "1. Set up Maya, on /patient. Press Use the demo server account so Maya has a patient account on this browser before the clinic sends anything.",
   "2. Riverbend Family Clinic sends the referral, on /clinic. Tap Send referral on this page.",
-  "3. Maya approves the share, on /patient. Tap Check with secure AI, and then tap Approve and share.",
+  "3. Maya approves the share, on /patient. Press Check with secure AI and then Approve and share, so Maya's signature is what lets the hospital open the record.",
   "4. St. Aster Hospital opens the chart, on /hospital. Tap Open chart on this page.",
   "5. Maya revokes access. Revoke is step 5, on /patient/sharing. Tap Revoke for St. Aster Hospital.",
   "6. The contract check refuses the open. The refused open is step 6, on /hospital. The contract check refuses the open, and nothing new is written.",
@@ -165,7 +165,7 @@ export const ASSIST_KNOWLEDGE = [
   "",
   "Why NEAR, and what a transaction proves",
   "The contract is a neutral record that no clinic can edit. Consent, scope, expiry, revocation, the encryption-key directory, and the custody log live on the contract. Two hospitals do not have to trust each other's database.",
-  "Staff software can request and open. It cannot consent for a patient or move funds. Consent, decline, patient-created shares, and revoke require the patient predecessor and exactly 1 yoctoNEAR.",
+  "Staff software can request and open. It cannot consent for a patient or move funds. Consent, decline, patient-created shares, and revoke require the patient predecessor and exactly 1 yoctoNEAR. Those methods require exactly 1 yoctoNEAR. The clinic function-call key cannot call `request_open` or `request_owner_open`, so a clinic staff key cannot open a share.",
   "No health data, names, or chart text are written to the chain. The chain stores ids, hashes, timestamps, organization names, roles, and public encryption keys.",
   "The contract in this demo is rr191f8afd-contract.testnet. This build is testnet only. It is not mainnet, not a payment, and not a live clinic system. Testnet is the practice network where these calls are signed. Mainnet is the live NEAR network. This demo does not sign mainnet transactions.",
   "create_record proves a clinic stored section hashes for a patient. It does not store the chart.",

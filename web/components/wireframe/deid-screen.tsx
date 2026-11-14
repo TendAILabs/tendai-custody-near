@@ -33,7 +33,7 @@ export function DeidScreen({ titleAs: _titleAs = "h1" }: { titleAs?: "h1" | "h2"
             <span className="t">
               A <em>Before</em>
             </span>
-            <span className="r">What Maya's chart says</span>
+            <span className="r">{"What Maya's chart says"}</span>
           </div>
           <div className="c2-panel c2-ba" data-testid="deid-before">
             {before

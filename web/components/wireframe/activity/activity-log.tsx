@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GUIDE_EXTRAS, guideComplete } from "@/lib/guide";
@@ -9,10 +9,23 @@ import { activityCsv, activityJson, buildActivity, filterRows, formatEventTime, 
 import { loadActors, loadRecord, type ChainActor, type ChainEvent, type ChainShareFull } from "@/lib/near/custody";
 import { loadDemoConfig, type DemoConfig } from "@/lib/relay/flow";
 import { phiHits } from "@/lib/story";
+import { useClientMounted } from "@/lib/client-mounted";
 import { useStory } from "@/lib/story-context";
 import { ContractPanel } from "./contract-panel";
 import { ReferenceRun } from "./reference-run";
 import { Btn, PageHead, Tag } from "../c2";
+
+function subscribeClient() {
+  return () => {};
+}
+
+function readTimeZone(): string {
+  return formatEventTime((BigInt(Date.now()) * BigInt(1_000_000)).toString()).zone;
+}
+
+function emptyTimeZone(): string {
+  return "";
+}
 
 function saveFile(name: string, body: string, type: string) {
   const blob = new Blob([body], { type });
@@ -58,11 +71,8 @@ export function ActivityLog() {
   const [kind, setKind] = useState("all");
   const [open, setOpen] = useState<string | null>(null);
   const [showChain, setShowChain] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useClientMounted();
+  const zone = useSyncExternalStore(subscribeClient, readTimeZone, emptyTimeZone);
 
   useEffect(() => {
     if (!ready) return;
@@ -73,7 +83,9 @@ export function ActivityLog() {
     const recordId = state.recordId;
     if (!recordId) return;
     let cancel = false;
-    setLoading(true);
+    queueMicrotask(() => {
+      if (!cancel) setLoading(true);
+    });
     loadDemoConfig()
       .then(async (config) => {
         const [directory, record] = await Promise.all([loadActors(config.contractId), loadRecord(config.contractId, recordId)]);
@@ -109,7 +121,6 @@ export function ActivityLog() {
   const kinds = kindChoices(rows);
   const chainRaw = JSON.stringify({ events, shares }, null, 2);
   const hits = phiHits({ events, shares });
-  const zone = mounted ? formatEventTime((BigInt(Date.now()) * BigInt(1_000_000)).toString()).zone : "";
 
   return (
     <div data-testid="activity-log">
