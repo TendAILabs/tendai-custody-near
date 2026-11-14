@@ -24,6 +24,7 @@ export async function rpcPost(body: unknown, init?: { timeoutMs?: number }): Pro
   const order = live.length > 0 ? [...live, ...urls.filter((url) => !live.includes(url))] : urls;
   const text = JSON.stringify(body);
   let last: { status: number; payload: RpcEnvelope } | null = null;
+  let firstError: { status: number; payload: RpcEnvelope } | null = null;
   for (const url of order) {
     try {
       const response = await fetch(url, {
@@ -44,6 +45,12 @@ export async function rpcPost(body: unknown, init?: { timeoutMs?: number }): Pro
         last = { status: status === 200 ? 502 : status, payload: payload ?? {} };
         continue;
       }
+      if (payload.error) {
+        // A node-side JSON-RPC error (not a contract error, which sits under result). Ask the next node,
+        // and fall back to this answer when every node says the same thing.
+        firstError ??= { status, payload };
+        continue;
+      }
       downUntil.delete(url);
       return { status, payload };
     } catch {
@@ -51,5 +58,5 @@ export async function rpcPost(body: unknown, init?: { timeoutMs?: number }): Pro
       last = { status: 599, payload: {} };
     }
   }
-  return last ?? { status: 599, payload: {} };
+  return firstError ?? last ?? { status: 599, payload: {} };
 }

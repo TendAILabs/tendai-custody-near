@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useReducer, useState, type Dispatch, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState, type Dispatch, type ReactNode } from "react";
 import type { ExpiryDays, SectionKey } from "./fixtures";
 import {
   approveReferral,
@@ -32,7 +32,7 @@ function failure(error: unknown): string {
   if (!message || /blob put failed|sign in required|^sign failed$|bad request|bad origin/i.test(message)) {
     return "That step did not go through. Choose Use the demo server account on Maya's page if you have not yet, and then try again.";
   }
-  if (/^ERR_[A-Z0-9_]+$/.test(message) || message.startsWith("Riverbend") || message.startsWith("Maya") || message.startsWith("The ") || message.startsWith("This ")) {
+  if (/^ERR_[A-Z0-9_]+$/.test(message) || message.startsWith("Riverbend") || message.startsWith("Maya") || message.startsWith("The ") || message.startsWith("This ") || message.startsWith("Too many")) {
     return message;
   }
   return "That step did not go through. Try it again.";
@@ -354,30 +354,18 @@ interface StoryContextValue extends StoryApi {
 
 const StoryContext = createContext<StoryContextValue | null>(null);
 
-const storyBoxes = new WeakMap<Dispatch<StoryAction>, { state: Story }>();
-
-function storyBox(dispatch: Dispatch<StoryAction>, state: Story): { state: Story } {
-  const existing = storyBoxes.get(dispatch);
-  if (existing) {
-    existing.state = state;
-    return existing;
-  }
-  const created = { state };
-  storyBoxes.set(dispatch, created);
-  return created;
-}
-
 export function StoryProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(storyReducer, undefined, freshStory);
   const [ready, setReady] = useState(false);
   const [activity, setActivity] = useState<string | null>(null);
-  const box = storyBox(dispatch, state);
-  const api = useMemo(() => createApi(dispatch, () => box.state, setActivity), [box, dispatch, setActivity]);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const api = useMemo(() => createApi(dispatch, () => stateRef.current, setActivity), []);
 
   useEffect(() => {
     const loaded = loadStory();
     if (loaded) dispatch({ type: "hydrate", story: loaded });
-    queueMicrotask(() => setReady(true));
+    setReady(true);
   }, []);
 
   useEffect(() => {

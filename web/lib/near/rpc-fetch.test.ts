@@ -47,3 +47,19 @@ test("only transport errors fail over for near-api-js calls", () => {
   assert.equal(isTransportError(new Error("ERR_ALREADY_REGISTERED")), false);
   assert.equal(isTransportError(Object.assign(new Error("InvalidNonce"), { type: "InvalidNonce" })), false);
 });
+
+test("a node-side JSON-RPC error asks the next node and keeps the first answer when all agree", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = (async () => {
+    calls += 1;
+    return reply(200, { jsonrpc: "2.0", error: { name: "HANDLER_ERROR", message: "node is behind" } });
+  }) as typeof fetch;
+  try {
+    const out = await rpcPost({ jsonrpc: "2.0", id: "t", method: "query", params: {} });
+    assert.equal(out.payload.error?.message, "node is behind");
+    assert.ok(calls >= 2);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
