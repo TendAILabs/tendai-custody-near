@@ -8,8 +8,6 @@ import {
   EXPLORER_ACCOUNT,
   FAQ,
   FLOW_STEPS,
-  WHITEPAPER_PDF_URL,
-  WHITEPAPER_URL,
   type DocBlock,
   type DocSection,
 } from "../../content/docs";
@@ -119,37 +117,6 @@ function Methods() {
   );
 }
 
-function allowedHref(value: string | null): string | null {
-  if (!value) return null;
-  if (value.startsWith("/") && !value.startsWith("//")) return value;
-  if (value.startsWith("https://")) return value;
-  return null;
-}
-
-function Whitepaper() {
-  const page = allowedHref(WHITEPAPER_URL);
-  const pdf = allowedHref(WHITEPAPER_PDF_URL);
-  if (!page && !pdf) {
-    return (
-      <div className="docs-paper" data-testid="whitepaper-card">
-        <p className="docs-kicker">Coming</p>
-        <h3>The whitepaper is coming</h3>
-        <p>There is no page link and no PDF download while both config values are null.</p>
-      </div>
-    );
-  }
-  return (
-    <div className="docs-paper" data-testid="whitepaper-card">
-      <p className="docs-kicker">Paper</p>
-      <h3>Whitepaper</h3>
-      <div className="docs-paper-links">
-        {page ? <a href={page}>Read the whitepaper</a> : null}
-        {pdf ? <a href={pdf}>Download the PDF</a> : null}
-      </div>
-    </div>
-  );
-}
-
 function FaqList() {
   return (
     <div className="docs-faq">
@@ -245,7 +212,6 @@ function BlockView({ block }: { block: DocBlock }) {
   }
   if (block.kind === "flow") return <FlowDiagram />;
   if (block.kind === "methods") return <Methods />;
-  if (block.kind === "whitepaper") return <Whitepaper />;
   return <FaqList />;
 }
 
