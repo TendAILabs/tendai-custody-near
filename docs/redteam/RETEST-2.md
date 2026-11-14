@@ -6,7 +6,7 @@ The live UI and the README use one compliance phrase. The product is designed ar
 
 | Item | Value |
 | --- | --- |
-| Repo | TendAILabs/TendAI-NEAR, private |
+| Repo | Development repo of this project |
 | Head | `603efa7b` (`603efa7b214d66d7b80fc7693f0a4d545d10ce74`), branch `cursor/rename-and-partials-3f0c` |
 | When | 2026-11-11, UTC |
 | Preview | https://tendaicustody.app (public origin). The temporary preview host used on 2026-11-11 is omitted. Commit `603efa7b`. |

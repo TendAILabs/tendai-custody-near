@@ -6,7 +6,7 @@ The product is designed around HIPAA principles. That means patient authorizatio
 
 | Item | Value |
 | --- | --- |
-| Repo | TendAILabs/TendAI-NEAR, private |
+| Repo | Development repo of this project |
 | Starting commit | `060ea5d7` (`060ea5d73f05a27954f0a95dc0d89de582ac61f1`), branch `main` |
 | When | 2026-11-11, about 09:40 to 09:55 Bangkok (UTC+7) |
 | Contract under test | source at that commit, plus read-only views of `rr6c9910d7.testnet` |

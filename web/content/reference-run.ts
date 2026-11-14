@@ -1,4 +1,4 @@
-export const GITHUB_REPO = "https://github.com/TendAILabs/TendAI-NEAR";
+export const GITHUB_REPO = "https://github.com/TendAILabs/tendai-custody-near";
 
 export const HACKATHON_LINE = "Built for NEAR HACKATHON, privacy and security tracks.";
 
