@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { useClientMounted } from "@/lib/client-mounted";
 import {
   Bar,
   BarChart,
@@ -17,9 +18,18 @@ import { Card, Pill } from "./ui";
 const COLORS = ["#0c6e6a", "#c9842a", "#1f7a4d", "#6d3ea8", "#2a4e9a"];
 
 export function useChartReady(): boolean {
-  const [ready, setReady] = useState(false);
-  useEffect(() => setReady(true), []);
-  return ready;
+  return useClientMounted();
+}
+
+function donutStops(slices: { value: number }[], total: number): string[] {
+  const ends = slices.reduce<number[]>((acc, slice) => {
+    const prev = acc.at(-1) ?? 0;
+    return [...acc, prev + (slice.value / total) * 100];
+  }, []);
+  return ends.map((end, index) => {
+    const start = ends[index - 1] ?? 0;
+    return `${COLORS[index % COLORS.length]} ${start}% ${end}%`;
+  });
 }
 
 export function ChartCard({
@@ -101,12 +111,7 @@ export function Donut({ data }: { data: { name: string; value: number }[] }) {
   const slices = data.filter((item) => item.value > 0);
   const total = slices.reduce((sum, item) => sum + item.value, 0);
   if (total === 0) return <p className="text-sm text-[var(--muted)]">No active holders yet.</p>;
-  let cursor = 0;
-  const stops = slices.map((slice, index) => {
-    const start = cursor;
-    cursor += (slice.value / total) * 100;
-    return `${COLORS[index % COLORS.length]} ${start}% ${cursor}%`;
-  });
+  const stops = donutStops(slices, total);
   return (
     <div
       className="mx-auto grid h-40 w-40 place-items-center rounded-full"

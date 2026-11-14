@@ -50,8 +50,12 @@ export function RequestsScreen({ embedded: _embedded = false }: { embedded?: boo
   useEffect(() => {
     let cancelled = false;
     if (sessionIds.length === 0) {
-      setPendingOnChain(0);
-      return;
+      queueMicrotask(() => {
+        if (!cancelled) setPendingOnChain(0);
+      });
+      return () => {
+        cancelled = true;
+      };
     }
     fetch("/api/visitor", { credentials: "same-origin" })
       .then((response) => (response.ok ? response.json() : null))

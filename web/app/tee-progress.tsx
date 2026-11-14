@@ -18,9 +18,6 @@ export function TeeProgress() {
 
   useEffect(() => {
     if (mode !== "replay") return;
-    setActive(0);
-    setDone(false);
-    setStatus("Playing the cached verification.");
     const timers = TEE_STAGES.map((_, index) =>
       window.setTimeout(() => {
         setActive(index);
@@ -156,6 +153,9 @@ export function TeeProgress() {
           className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-800"
           onClick={() => {
             setMode("replay");
+            setActive(0);
+            setDone(false);
+            setStatus("Playing the cached verification.");
             setReplayKey((key) => key + 1);
           }}
         >

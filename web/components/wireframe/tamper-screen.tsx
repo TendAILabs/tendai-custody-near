@@ -16,10 +16,7 @@ export function TamperScreen() {
   useEffect(() => {
     if (!state.tamper) return;
     const shareId = state.shareId;
-    if (!shareId) {
-      setNote("Approve a referral before this screen has an envelope hash.");
-      return;
-    }
+    if (!shareId) return;
     let cancel = false;
     tamperEnvelopeHashes(shareId)
       .then((result) => {
@@ -38,6 +35,7 @@ export function TamperScreen() {
   }, [state.artifactHash, state.shareId, state.tamper]);
 
   const refused = state.lastOpenError === "ERR_TAMPER";
+  const hashNote = state.tamper && !state.shareId ? "Approve a referral before this screen has an envelope hash." : note;
 
   return (
     <div>
@@ -69,7 +67,7 @@ export function TamperScreen() {
             <div className="c2-lab ink" style={{ margin: "14px 0 6px" }}>
               Recomputed from the flipped envelope
             </div>
-            {presented ? <HashDiff approved={approved} presented={presented} /> : <div className="c2-hx">{note || "Waiting for the envelope."}</div>}
+            {presented ? <HashDiff approved={approved} presented={presented} /> : <div className="c2-hx">{hashNote || "Waiting for the envelope."}</div>}
           </Section>
           <Section index="B" title="Refusal, logged" aside="On NEAR" bad delay={3}>
             <div className="c2-navy c2-term">

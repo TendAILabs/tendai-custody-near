@@ -5,6 +5,7 @@ import { describeActor, formatEventTime, shareKindLabel, statusLabel, stillHasAc
 import { loadActors, loadRecord, type ChainActor, type ChainShareFull } from "@/lib/near/custody";
 import { accountUrl } from "@/lib/near/explorer";
 import { loadDemoConfig } from "@/lib/relay/flow";
+import { useClientMounted } from "@/lib/client-mounted";
 import { useStory } from "@/lib/story-context";
 import { Btn, PageHead, Section, Tag } from "../c2";
 import { WhatYouCanVerify } from "./verify-panel";
@@ -28,15 +29,13 @@ export function AuditScreen() {
   const [contractId, setContractId] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useClientMounted();
 
   useEffect(() => {
     let cancel = false;
-    setLoading(true);
+    queueMicrotask(() => {
+      if (!cancel) setLoading(true);
+    });
     loadDemoConfig()
       .then(async (config) => {
         const [directory, record] = await Promise.all([
