@@ -36,7 +36,7 @@ export function PatientSetup() {
   }
   if (account.kind === "demo-server") {
     return (
-      <div data-testid="patient-account-setup">
+      <div className="c2-setup" data-testid="patient-account-setup">
         <p className="c2-lede">
           The demo server account is the easy option, and your own wallet needs a contract upgrade that is not on testnet yet.
         </p>
@@ -67,7 +67,7 @@ export function PatientSetup() {
   }
   if (account.kind === "local-key" || account.kind === "near-connect") {
     return (
-      <div data-testid="patient-account-setup">
+      <div className="c2-setup" data-testid="patient-account-setup">
         <p className="c2-lede">This browser already has a testnet account. Continue with it to finish this step.</p>
         <button type="button" className="c2-btn" data-testid="continue-account" data-guide="setup" onClick={markSetupDone}>
           Continue with this account
@@ -76,7 +76,7 @@ export function PatientSetup() {
     );
   }
   return (
-    <div data-testid="patient-account-setup">
+    <div className="c2-setup" data-testid="patient-account-setup">
       <p className="c2-lede">
         Press Use the demo server account to play Maya in this story, or choose Try instantly or Use my wallet if you want a testnet account of your own.
       </p>
